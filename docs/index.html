@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fitbit MCP Unofficial</title>
+  <meta name="description" content="Unofficial local-first Fitbit MCP server for AI agents. Connect activity, sleep, heart-rate, HRV, weight and nutrition data through the official Fitbit Web API.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Fitbit MCP Unofficial">
+  <meta property="og:description" content="Give AI agents safe, local-first access to your Fitbit signal: activity, sleep, heart, HRV, weight and nutrition.">
+  <meta property="og:image" content="https://fitbitmcp.vercel.app/assets/og-card.svg">
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <p class="eyebrow">Unofficial · Open Source · Local First</p>
+      <h1>Your Fitbit signal should be readable by your agent, not trapped in screenshots.</h1>
+      <p class="hero-text">Fitbit MCP connects AI agents to your authorized Fitbit Web API data: activity, sleep, heart rate, HRV, SpO2, breathing rate, weight, food and water logs. Tokens stay local. Raw data is opt-in. Medical diagnosis is out of scope.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/davidmosiah/fitbitmcp">GitHub</a>
+        <a class="button secondary" href="https://www.npmjs.com/package/fitbit-mcp-unofficial">npm</a>
+        <a class="button secondary" href="quickstart.md">Quickstart</a>
+      </div>
+      <div class="signal-card-grid">
+        <article><span>25 tools</span><strong>Profile, devices, activity, sleep, heart, HRV, weight, nutrition</strong></article>
+        <article><span>Local OAuth</span><strong>Tokens under ~/.fitbit-mcp with 0600 permissions</strong></article>
+        <article><span>Agent-ready</span><strong>Daily and weekly summaries for Claude, Cursor, Hermes and OpenClaw</strong></article>
+      </div>
+    </section>
+
+    <section class="story-grid">
+      <article class="story-card"><span>01</span><h2>Create a Fitbit app</h2><p>Use callback <code>http://127.0.0.1:3000/callback</code> and scopes <code>activity heartrate profile settings sleep weight nutrition</code>.</p></article>
+      <article class="story-card"><span>02</span><h2>Authorize locally</h2><p><code>npx -y fitbit-mcp-unofficial setup</code><br><code>npx -y fitbit-mcp-unofficial auth</code><br><code>npx -y fitbit-mcp-unofficial doctor</code></p></article>
+      <article class="story-card"><span>03</span><h2>Ask better questions</h2><p>Start with <code>fitbit_daily_summary</code> and <code>fitbit_weekly_summary</code>, then drill into sleep, heart, HRV or activity only when needed.</p></article>
+    </section>
+
+    <section class="privacy-section">
+      <div><p class="eyebrow">Boundary</p><h2>Useful health context without pretending to be a doctor.</h2><p>This bridge exposes processed Fitbit Web API data. It does not expose raw accelerometer telemetry, private Google endpoints, or medical diagnosis.</p></div>
+      <div class="privacy-grid"><article><strong>Summary</strong><p>Minimal safe fields.</p></article><article><strong>Structured</strong><p>Normalized agent data.</p></article><article><strong>Raw</strong><p>Explicit upstream JSON.</p></article><article><strong>Hermes</strong><p>Agent manifest and reload guidance.</p></article></div>
+    </section>
+  </main>
+  <script src="assets/site.js"></script>
+</body>
+</html>

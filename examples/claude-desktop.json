@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fitbit": {
+      "command": "npx",
+      "args": ["-y", "fitbit-mcp-unofficial"]
+    }
+  }
+}

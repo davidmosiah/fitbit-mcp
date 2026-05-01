@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fitbitmcp.vercel.app/sitemap.xml

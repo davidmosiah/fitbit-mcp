@@ -1,0 +1,8 @@
+Fitbit MCP Unofficial
+
+Unofficial local-first MCP server for connecting AI agents to user-authorized Fitbit Web API data.
+
+Default scopes: activity heartrate profile settings sleep weight nutrition.
+Important tools: fitbit_connection_status, fitbit_daily_summary, fitbit_weekly_summary, fitbit_get_sleep_day, fitbit_get_heart_day, fitbit_get_hrv_day, fitbit_get_heart_intraday.
+Privacy: tokens stay local under ~/.fitbit-mcp. summary and structured modes minimize sensitive output. raw mode is explicit.
+Boundary: not affiliated with Fitbit or Google. Not medical advice. Does not expose raw device telemetry.
