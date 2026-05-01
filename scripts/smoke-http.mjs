@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import http from 'node:http';
 
-const port = String(3900 + Math.floor(Math.random() * 500));
+const port = String(43000 + Math.floor(Math.random() * 1000));
 const child = spawn(process.execPath, ['dist/index.js', '--http'], {
   env: { ...process.env, FITBIT_MCP_PORT: port, FITBIT_MCP_HOST: '127.0.0.1' },
   stdio: ['ignore', 'ignore', 'pipe']
@@ -10,12 +11,31 @@ const child = spawn(process.execPath, ['dist/index.js', '--http'], {
 let stderr = '';
 child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
 
+function getJson(url) {
+  return new Promise((resolve, reject) => {
+    const request = http.get(url, { timeout: 1000 }, (response) => {
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => { body += chunk; });
+      response.on('end', () => {
+        try {
+          resolve({ statusCode: response.statusCode, data: JSON.parse(body) });
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+    request.on('timeout', () => request.destroy(new Error('HTTP health check timed out')));
+    request.on('error', reject);
+  });
+}
+
 try {
   let ok = false;
   for (let i = 0; i < 30; i += 1) {
     try {
-      const response = await fetch(`http://127.0.0.1:${port}/health`);
-      const data = await response.json();
+      const { statusCode, data } = await getJson(`http://127.0.0.1:${port}/health`);
+      assert.equal(statusCode, 200);
       assert.equal(data.ok, true);
       ok = true;
       break;
