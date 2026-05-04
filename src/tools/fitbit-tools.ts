@@ -233,23 +233,23 @@ export function registerFitbitTools(server: McpServer): void {
   });
 
   registerCollectionTool(server, "fitbit_list_activities", "Fitbit Activity Logs", "/1/user/-/activities/list.json", "List Fitbit activity logs. Supports before/after cursor, pagination and privacy modes. Requires activity scope.");
-  registerCollectionTool(server, "fitbit_list_sleep", "Fitbit Sleep Logs", "/1.2/user/-/sleep/list.json", "List Fitbit sleep logs. Supports before/after cursor, pagination and privacy modes. Requires sleep scope.");
+  registerCollectionTool(server, "fitbit_list_sleep", "Fitbit Sleep Logs", "/1.2/user/-/sleep/list.json", "List Fitbit sleep logs. Supports before/after cursor, pagination and privacy modes. Requires sleep scope. Not medical advice.");
 
   registerGetByIdTool(server, "fitbit_get_activity", "Fitbit Activity", (id) => `/1/user/-/activities/${id}.json`, "Get detailed Fitbit activity log by id. Requires activity scope.");
 
   registerDateTool(server, "fitbit_get_activity_day", "Fitbit Daily Activity", (date) => `/1/user/-/activities/date/${date}.json`, "Get daily activity summary, goals and distances for a date. Requires activity scope.");
-  registerDateTool(server, "fitbit_get_sleep_day", "Fitbit Daily Sleep", (date) => `/1.2/user/-/sleep/date/${date}.json`, "Get sleep logs and stages for a date. Requires sleep scope.");
-  registerDateTool(server, "fitbit_get_heart_day", "Fitbit Daily Heart Rate", (date) => `/1/user/-/activities/heart/date/${date}/1d.json`, "Get daily heart-rate zones and resting heart rate. Requires heartrate scope.");
-  registerDateTool(server, "fitbit_get_hrv_day", "Fitbit Daily HRV", (date) => `/1/user/-/hrv/date/${date}.json`, "Get HRV summary for a date when available. Requires heartrate scope and supported device/data.");
-  registerDateTool(server, "fitbit_get_breathing_rate_day", "Fitbit Daily Breathing Rate", (date) => `/1/user/-/br/date/${date}.json`, "Get breathing-rate summary for a date when available.");
-  registerDateTool(server, "fitbit_get_spo2_day", "Fitbit Daily SpO2", (date) => `/1/user/-/spo2/date/${date}.json`, "Get SpO2 summary for a date when available.");
-  registerDateTool(server, "fitbit_get_weight_day", "Fitbit Weight Logs", (date) => `/1/user/-/body/log/weight/date/${date}.json`, "Get weight logs for a date. Requires weight scope.");
+  registerDateTool(server, "fitbit_get_sleep_day", "Fitbit Daily Sleep", (date) => `/1.2/user/-/sleep/date/${date}.json`, "Get sleep logs and stages for a date. Requires sleep scope. Not medical advice.");
+  registerDateTool(server, "fitbit_get_heart_day", "Fitbit Daily Heart Rate", (date) => `/1/user/-/activities/heart/date/${date}/1d.json`, "Get daily heart-rate zones and resting heart rate. Requires heartrate scope. Not medical advice.");
+  registerDateTool(server, "fitbit_get_hrv_day", "Fitbit Daily HRV", (date) => `/1/user/-/hrv/date/${date}.json`, "Get HRV summary for a date when available. Requires heartrate scope and supported device/data. Not medical advice.");
+  registerDateTool(server, "fitbit_get_breathing_rate_day", "Fitbit Daily Breathing Rate", (date) => `/1/user/-/br/date/${date}.json`, "Get breathing-rate summary for a date when available. Requires heartrate scope. Not medical advice.");
+  registerDateTool(server, "fitbit_get_spo2_day", "Fitbit Daily SpO2", (date) => `/1/user/-/spo2/date/${date}.json`, "Get SpO2 summary for a date when available. Requires heartrate scope. Not medical advice.");
+  registerDateTool(server, "fitbit_get_weight_day", "Fitbit Weight Logs", (date) => `/1/user/-/body/log/weight/date/${date}.json`, "Get weight logs for a date. Requires weight scope. Not medical advice.");
   registerDateTool(server, "fitbit_get_food_day", "Fitbit Food Logs", (date) => `/1/user/-/foods/log/date/${date}.json`, "Get food logs for a date. Requires nutrition scope.");
   registerDateTool(server, "fitbit_get_water_day", "Fitbit Water Logs", (date) => `/1/user/-/foods/log/water/date/${date}.json`, "Get water logs for a date. Requires nutrition scope.");
 
   server.registerTool("fitbit_get_heart_intraday", {
     title: "Fitbit Heart Rate Intraday",
-    description: "Get heart-rate intraday samples for a date. Personal apps can access their own intraday data; third-party client/server apps may require Fitbit approval.",
+    description: "Get heart-rate intraday samples for a date. Personal apps can access their own intraday data; third-party client/server apps may require Fitbit approval. Requires heartrate scope. Not medical advice.",
     inputSchema: HeartIntradayInputSchema.shape,
     outputSchema: EndpointDataOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
