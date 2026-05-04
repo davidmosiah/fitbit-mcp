@@ -133,4 +133,5 @@ npm test
 - GitHub: https://github.com/davidmosiah/fitbitmcp
 - npm: https://www.npmjs.com/package/fitbit-mcp-unofficial
 - Delx Wellness registry: https://github.com/davidmosiah/delx-wellness
+- Connector quality standard: https://github.com/davidmosiah/delx-wellness/blob/main/docs/connector-quality-standard.md
 - Fitbit Web API: https://dev.fitbit.com/build/reference/web-api/
