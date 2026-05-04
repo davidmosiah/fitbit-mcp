@@ -1,17 +1,18 @@
-const revealItems = document.querySelectorAll('section:not(.hero) [data-reveal], .story-section, .setup-section, .architecture-section, .privacy-section, .agent-section, .closing');
+document.documentElement.classList.add('js');
 
+const revealItems = document.querySelectorAll('.section-shell, .proof-strip');
 if ('IntersectionObserver' in window) {
-  const revealObserver = new IntersectionObserver((entries) => {
+  const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
-        revealObserver.unobserve(entry.target);
+        observer.unobserve(entry.target);
       }
     }
-  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -80px 0px' });
   revealItems.forEach((item) => {
     item.setAttribute('data-reveal', '');
-    revealObserver.observe(item);
+    observer.observe(item);
   });
 } else {
   revealItems.forEach((item) => item.classList.add('is-visible'));

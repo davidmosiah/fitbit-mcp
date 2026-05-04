@@ -1,5 +1,8 @@
 # Fitbit MCP Unofficial
 
+[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-7C3AED?style=flat-square&logo=anthropic&logoColor=white)](https://modelcontextprotocol.io) [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Provider: Fitbit](https://img.shields.io/badge/data-Fitbit-00B0B9?style=flat-square&logo=fitbit&logoColor=white)](https://fitbit.com)
+
+
 Unofficial, local-first Model Context Protocol server for connecting AI agents to user-authorized Fitbit data through the official Fitbit Web API.
 
 It is designed for Claude, Cursor, Windsurf, Hermes, OpenClaw and other MCP clients that need safe access to activity, sleep, heart-rate, HRV, weight and nutrition context.

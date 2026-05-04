@@ -87,11 +87,11 @@ try {
   mkdirSync(join(mergeDir, '.hermes'), { recursive: true, mode: 0o700 });
   writeFileSync(join(mergeDir, '.hermes', 'config.yaml'), [
     'mcp_servers:',
-    '  whoop:',
+    '  existing_health_mcp:',
     '    command: npx',
     '    args:',
     '      - -y',
-    '      - whoop-mcp-unofficial',
+    '      - existing-health-mcp',
     ''
   ].join('\n'), { mode: 0o600 });
   const mergeSetup = spawnSync(process.execPath, [
@@ -114,7 +114,7 @@ try {
   assert.equal(mergeSetup.status, 0, mergeSetup.stderr);
   const mergedConfig = readFileSync(join(mergeDir, '.hermes', 'config.yaml'), 'utf8');
   assert.equal((mergedConfig.match(/^mcp_servers:/gm) ?? []).length, 1, 'Hermes setup should merge into an existing mcp_servers block instead of duplicating it.');
-  assert.match(mergedConfig, /whoop:/);
+  assert.match(mergedConfig, /existing_health_mcp:/);
   assert.match(mergedConfig, /fitbit:/);
   assert.match(mergedConfig, new RegExp(pinnedPackage.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   rmSync(mergeDir, { recursive: true, force: true });
