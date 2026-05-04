@@ -1,6 +1,6 @@
 # Fitbit MCP Unofficial
 
-[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-7C3AED?style=flat-square&logo=anthropic&logoColor=white)](https://modelcontextprotocol.io) [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Provider: Fitbit](https://img.shields.io/badge/data-Fitbit-00B0B9?style=flat-square&logo=fitbit&logoColor=white)](https://fitbit.com)
+[![MCP Compatible](https://img.shields.io/badge/MCP-compatible-7C3AED?style=flat-square&logo=anthropic&logoColor=white)](https://modelcontextprotocol.io) [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Provider: Fitbit](https://img.shields.io/badge/data-Fitbit-00B0B9?style=flat-square&logo=fitbit&logoColor=white)](https://fitbit.com) [![npm version](https://img.shields.io/npm/v/fitbit-mcp-unofficial?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/fitbit-mcp-unofficial)
 
 
 Unofficial, local-first Model Context Protocol server for connecting AI agents to user-authorized Fitbit data through the official Fitbit Web API.
