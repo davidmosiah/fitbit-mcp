@@ -40,6 +40,7 @@ export function buildCapabilities() {
       "Call fitbit_connection_status before calling Fitbit data tools.",
       "If setup is incomplete, guide the user through setup, auth and doctor.",
       "Use fitbit_daily_summary or fitbit_weekly_summary before low-level endpoint tools.",
+      "Use fitbit_wellness_context when handing sleep/activity context to Exercise Catalog.",
       "Treat health data as sensitive; avoid raw payloads unless explicitly requested.",
       "Use Fitbit as trend context, not medical diagnosis. Escalate symptoms or abnormal vitals to clinicians."
     ],

@@ -8,6 +8,7 @@ export const HERMES_DIRECT_TOOLS = [
   "mcp_fitbit_fitbit_connection_status",
   "mcp_fitbit_fitbit_daily_summary",
   "mcp_fitbit_fitbit_weekly_summary",
+  "mcp_fitbit_fitbit_wellness_context",
   "mcp_fitbit_fitbit_get_sleep_day",
   "mcp_fitbit_fitbit_get_heart_day",
   "mcp_fitbit_fitbit_get_heart_intraday"
@@ -36,6 +37,7 @@ const STANDARD_TOOLS = [
   "fitbit_get_water_day",
   "fitbit_daily_summary",
   "fitbit_weekly_summary",
+  "fitbit_wellness_context",
   "fitbit_privacy_audit",
   "fitbit_cache_status",
   "fitbit_revoke_access"
@@ -67,7 +69,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       token_storage: "~/.fitbit-mcp/tokens.json with 0600 permissions",
       secret_storage: "~/.fitbit-mcp/config.json or FITBIT_* environment variables; never print secrets"
     },
-    recommended_first_calls: ["fitbit_connection_status", "fitbit_daily_summary", "fitbit_weekly_summary"],
+    recommended_first_calls: ["fitbit_connection_status", "fitbit_wellness_context", "fitbit_daily_summary", "fitbit_weekly_summary"],
     standard_tools: STANDARD_TOOLS,
     resources: RESOURCES,
     hermes: {
@@ -136,7 +138,7 @@ ${manifest.agent_rules.map((rule) => `- ${rule}`).join("\n")}
 }
 
 export function hermesConfigSnippet(): string {
-  return `mcp_servers:\n  fitbit:\n    command: npx\n    args:\n      - -y\n      - ${PINNED_NPM_PACKAGE}`;
+  return `mcp_servers:\n  fitbit:\n    command: npx\n    args:\n      - -y\n      - ${PINNED_NPM_PACKAGE}\n    timeout: 120\n    connect_timeout: 60\n    sampling:\n      enabled: false`;
 }
 
 export function hermesSkillMarkdown(): string {
