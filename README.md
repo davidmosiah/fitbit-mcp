@@ -132,4 +132,5 @@ npm test
 - Website: https://fitbitmcp.vercel.app/
 - GitHub: https://github.com/davidmosiah/fitbitmcp
 - npm: https://www.npmjs.com/package/fitbit-mcp-unofficial
+- Delx Wellness registry: https://github.com/davidmosiah/delx-wellness
 - Fitbit Web API: https://dev.fitbit.com/build/reference/web-api/
