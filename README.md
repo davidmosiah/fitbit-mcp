@@ -197,7 +197,8 @@ npx @modelcontextprotocol/inspector node dist/index.js
 ## Links
 
 - npm: <https://www.npmjs.com/package/fitbit-mcp-unofficial>
-- Docs site: <https://fitbitmcp.vercel.app/>
+- Docs site: <https://wellness.delx.ai/connectors/fitbit>
+- Legacy docs: <https://fitbitmcp.vercel.app/>
 - GitHub: <https://github.com/davidmosiah/fitbitmcp>
 - Delx Wellness registry: <https://github.com/davidmosiah/delx-wellness>
 - Connector quality standard: <https://github.com/davidmosiah/delx-wellness/blob/main/docs/connector-quality-standard.md>

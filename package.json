@@ -75,7 +75,7 @@
   "bugs": {
     "url": "https://github.com/davidmosiah/fitbitmcp/issues"
   },
-  "homepage": "https://fitbitmcp.vercel.app/",
+  "homepage": "https://wellness.delx.ai/connectors/fitbit",
   "mcpName": "io.github.davidmosiah/fitbitmcp",
   "publishConfig": {
     "access": "public",
