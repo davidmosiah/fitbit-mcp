@@ -5,7 +5,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Provider: Fitbit](https://img.shields.io/badge/data-Fitbit-00B0B9?style=flat-square&logo=fitbit&logoColor=white)](https://fitbit.com)
 [![npm version](https://img.shields.io/npm/v/fitbit-mcp-unofficial?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/fitbit-mcp-unofficial)
+[![GitHub stars](https://img.shields.io/github/stars/davidmosiah/fitbitmcp?style=flat-square&logo=github)](https://github.com/davidmosiah/fitbitmcp/stargazers)
+[![npm downloads](https://img.shields.io/npm/dm/fitbit-mcp-unofficial?style=flat-square&color=0ea5a3&logo=npm)](https://www.npmjs.com/package/fitbit-mcp-unofficial)
 [![Delx Wellness](https://img.shields.io/badge/part%20of-Delx%20Wellness-0ea5a3?style=flat-square)](https://github.com/davidmosiah/delx-wellness)
+[![Agent-ready MCP](https://img.shields.io/badge/agent--ready-MCP-0ea5a3?style=flat-square)](https://wellness.delx.ai/connectors/fitbit)
 
 **Local-first MCP server that connects AI agents to your Fitbit activity, sleep, heart-rate, HRV, SpO2 and weight data.**
 
@@ -16,6 +19,8 @@
 Built by [David Mosiah](https://github.com/davidmosiah) for people who use Claude, Cursor, Hermes, OpenClaw or other MCP-compatible agents to think about activity, sleep and heart context — without copy-pasting numbers from the Fitbit app.
 
 Part of [Delx Wellness](https://github.com/davidmosiah/delx-wellness), a registry of local-first wellness MCP connectors.
+
+> If this connector helps your agent workflow, please star the repo. Stars make the project easier for other AI builders to discover and help Delx keep shipping local-first wellness infrastructure.
 
 ## Why this exists
 
