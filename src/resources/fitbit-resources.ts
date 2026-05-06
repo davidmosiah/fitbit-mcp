@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import { buildAgentManifest, formatAgentManifestMarkdown } from "../services/agent-manifest.js";
 import { buildCapabilities } from "../services/capabilities.js";
+import { buildDataInventory } from "../services/inventory.js";
 import { getConfig } from "../services/config.js";
 import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
 import { buildDailySummary, buildWeeklySummary, formatSummaryMarkdown } from "../services/summary.js";
@@ -37,6 +38,7 @@ async function weeklySummaryResource(uri: URL) {
 }
 
 export function registerFitbitResources(server: McpServer): void {
+  server.registerResource("fitbit_data_inventory", "fitbit://inventory", { title: "Fitbit Data Inventory", description: "Static inventory of supported Fitbit data domains, privacy modes and recommended first calls.", mimeType: "application/json" }, async (uri) => textResource(uri, JSON.stringify(buildDataInventory(), null, 2), "application/json"));
   server.registerResource("fitbit_capabilities", "fitbit://capabilities", { title: "Fitbit MCP Capabilities", description: "Static capabilities, API boundary, privacy modes and recommended agent workflow.", mimeType: "application/json" }, async (uri) => textResource(uri, JSON.stringify(buildCapabilities(), null, 2), "application/json"));
   server.registerResource("fitbit_agent_manifest", "fitbit://agent-manifest", { title: "Fitbit Agent Manifest", description: "Machine-readable install and operating instructions for AI agents.", mimeType: "text/markdown" }, async (uri) => textResource(uri, formatAgentManifestMarkdown(buildAgentManifest("generic"))));
   server.registerResource("fitbit_profile", "fitbit://profile", { title: "Fitbit Profile", description: "Authenticated Fitbit profile using the configured privacy mode.", mimeType: "application/json" }, profileResource);

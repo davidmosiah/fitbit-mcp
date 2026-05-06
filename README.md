@@ -101,6 +101,7 @@ This package uses the official Fitbit Web API. When this README says `raw`, it m
 **Start with these:**
 
 - `fitbit_connection_status` — verify local setup before calling Fitbit
+- `fitbit_data_inventory` — inventory supported data domains, scopes, privacy modes and recommended first calls without calling Fitbit APIs.
 - `fitbit_daily_summary` — readiness, activity, sleep and heart context for today
 - `fitbit_weekly_summary` — scorecard, comparison vs prior week, next-week plan
 
