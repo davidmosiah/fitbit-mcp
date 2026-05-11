@@ -4,12 +4,13 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const expectedTools = [
   'fitbit_agent_manifest', 'fitbit_cache_status', 'fitbit_capabilities', 'fitbit_connection_status',
-  'fitbit_daily_summary', 'fitbit_data_inventory', 'fitbit_exchange_code', 'fitbit_get_activity',
-  'fitbit_get_activity_day', 'fitbit_get_auth_url', 'fitbit_get_breathing_rate_day', 'fitbit_get_food_day',
-  'fitbit_get_heart_day', 'fitbit_get_heart_intraday', 'fitbit_get_hrv_day', 'fitbit_get_profile',
-  'fitbit_get_sleep_day', 'fitbit_get_spo2_day', 'fitbit_get_water_day', 'fitbit_get_weight_day',
-  'fitbit_list_activities', 'fitbit_list_devices', 'fitbit_list_sleep', 'fitbit_privacy_audit',
-  'fitbit_revoke_access', 'fitbit_weekly_summary', 'fitbit_wellness_context'
+  'fitbit_daily_summary', 'fitbit_data_inventory', 'fitbit_demo', 'fitbit_exchange_code',
+  'fitbit_get_activity', 'fitbit_get_activity_day', 'fitbit_get_auth_url', 'fitbit_get_breathing_rate_day',
+  'fitbit_get_food_day', 'fitbit_get_heart_day', 'fitbit_get_heart_intraday', 'fitbit_get_hrv_day',
+  'fitbit_get_profile', 'fitbit_get_sleep_day', 'fitbit_get_spo2_day', 'fitbit_get_water_day',
+  'fitbit_get_weight_day', 'fitbit_list_activities', 'fitbit_list_devices', 'fitbit_list_sleep',
+  'fitbit_privacy_audit', 'fitbit_quickstart', 'fitbit_revoke_access', 'fitbit_weekly_summary',
+  'fitbit_wellness_context'
 ];
 
 const expectedResources = [

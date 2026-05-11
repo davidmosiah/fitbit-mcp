@@ -183,6 +183,128 @@ export function registerFitbitTools(server: McpServer): void {
     }));
   });
 
+  server.registerTool("fitbit_quickstart", {
+    title: "Fitbit Quickstart",
+    description: "Personalized 3-step setup walkthrough for the human user. Adapts to current state (env vars set? token present? what's next?). Call this first when the user asks 'how do I connect Fitbit?'",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const status = await buildConnectionStatus();
+    const hasEnv = status.missing_env.length === 0;
+    const hasToken = status.ready_for_fitbit_api;
+    const steps = [
+      {
+        step: 1,
+        title: hasEnv ? "(done) Fitbit Developer credentials configured" : "Register a Fitbit app at https://dev.fitbit.com/apps",
+        action: hasEnv
+          ? "FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REDIRECT_URI are all set."
+          : `Create a Fitbit Developer app (type: Personal or Server) with a Callback URL like ${status.redirect_uri ?? "http://127.0.0.1:3000/callback"}, then set: ${status.missing_env.join(", ")}.`,
+        done: hasEnv,
+      },
+      {
+        step: 2,
+        title: hasToken ? "(done) Local token present — ready to read Fitbit data" : "Run the OAuth dance",
+        action: hasToken
+          ? "Tokens stored under ~/.fitbit-mcp/tokens.json. The connector will refresh automatically when needed."
+          : "Run `fitbit-mcp-server auth` (or call fitbit_get_auth_url + fitbit_exchange_code from the agent). Open the URL, grant access, paste the code.",
+        done: hasToken,
+      },
+      {
+        step: 3,
+        title: "Verify with the agent",
+        action: "Call fitbit_connection_status, then fitbit_daily_summary or fitbit_wellness_context. Pair with wellness-nourish for sleep-aware meal coaching.",
+        example: hasToken
+          ? "fitbit_wellness_context() → sleep + activity load handoff for nourish/cycle-coach."
+          : "Until step 2 is done, the data tools will surface a clear 'auth required' message.",
+        done: false,
+      },
+    ];
+    const payload = {
+      ok: true,
+      ready: hasEnv && hasToken,
+      steps,
+      next: steps.find((s) => !s.done) ?? steps[steps.length - 1],
+      migration_note: "Fitbit accounts are migrating to Google Health Connect. Existing OAuth tokens still work; new users who already use a Pixel Watch or Google Health Connect may prefer the google-health-mcp connector instead. See https://blog.fitbit.com/ for the latest migration timeline.",
+      cross_connector_hints: [
+        "Pair Fitbit sleep + steps with wellness-nourish for sleep-aware meal coaching.",
+        "Pair Fitbit HRV/RHR with wellness-cycle-coach for late-luteal load adjustments.",
+        "Pair Fitbit resting heart rate with wellness-cgm-mcp glucose for metabolic-stress signals.",
+      ],
+    };
+    const markdown = bulletList("Fitbit Quickstart", {
+      ready: payload.ready,
+      next: payload.next.title,
+      migration: "Fitbit -> Google Health Connect migration is rolling out; existing tokens still work.",
+    });
+    return makeResponse(payload, response_format, markdown);
+  });
+
+  server.registerTool("fitbit_demo", {
+    title: "Fitbit Demo",
+    description: "Returns realistic example payloads of fitbit_daily_summary, fitbit_wellness_context, and fitbit_get_heart_day so agents see the contract before calling real Fitbit APIs.",
+    inputSchema: ResponseOnlyInputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async ({ response_format }) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const payload = {
+      ok: true,
+      is_demo: true,
+      sample: {
+        fitbit_daily_summary: {
+          date: today,
+          activity: { steps: 8420, active_minutes: 38, calories_out: 2310, distance_km: 6.4, floors: 12 },
+          sleep: { score: 78, duration_min: 446, efficiency: 92, stages: { rem_min: 88, deep_min: 64, light_min: 248, wake_min: 46 } },
+          heart: { resting_heart_rate: 56, fat_burn_min: 42, cardio_min: 18, peak_min: 4 },
+          hrv: { daily_rmssd_ms: 42 },
+        },
+        fitbit_wellness_context: {
+          window: "last_24h",
+          sleep_score: 78,
+          sleep_duration_min: 446,
+          steps: 8420,
+          resting_heart_rate: 56,
+          hrv_ms: 42,
+          activity_load: "moderate",
+          recommendation: "Solid recovery night with good sleep efficiency. RHR slightly elevated vs. baseline — keep today's training conversational and hydrate. Aim for protein-forward meals to support overnight recovery.",
+        },
+        fitbit_get_heart_day: {
+          endpoint: "/1/user/-/activities/heart/date/" + today + "/1d.json",
+          privacy_mode: "structured",
+          data: {
+            "activities-heart": [
+              {
+                dateTime: today,
+                value: {
+                  restingHeartRate: 56,
+                  heartRateZones: [
+                    { name: "Out of Range", min: 30, max: 92, minutes: 1147 },
+                    { name: "Fat Burn", min: 92, max: 129, minutes: 42 },
+                    { name: "Cardio", min: 129, max: 158, minutes: 18 },
+                    { name: "Peak", min: 158, max: 220, minutes: 4 },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+      notes: [
+        "All sample data is synthetic; tagged with is_demo=true.",
+        "Real calls return live data from the Fitbit Web API after OAuth setup.",
+        "Some endpoints (e.g. intraday heart rate) may require Fitbit Developer app type approval.",
+      ],
+    };
+    const markdown = bulletList("Fitbit Demo", {
+      is_demo: true,
+      steps: 8420,
+      sleep_score: 78,
+      resting_heart_rate: 56,
+      hrv_ms: 42,
+      recommendation: payload.sample.fitbit_wellness_context.recommendation,
+    });
+    return makeResponse(payload, response_format, markdown);
+  });
+
   server.registerTool("fitbit_get_auth_url", {
     title: "Get Fitbit OAuth URL",
     description: "Generate a Fitbit OAuth authorization URL. Use this first when no local token exists.",

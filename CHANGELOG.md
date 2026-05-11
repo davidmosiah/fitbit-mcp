@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 2026-05-11
+
+- Add `fitbit_quickstart` tool — personalized 3-step setup walkthrough adapted to current state (env vars set? OAuth token present? what's next?). Surfaces the Fitbit-to-Google-Health-Connect migration path and returns cross-connector hints to pair with wellness-nourish, wellness-cycle-coach, and wellness-cgm-mcp.
+- Add `fitbit_demo` tool — realistic example payloads of `fitbit_daily_summary`, `fitbit_wellness_context`, and `fitbit_get_heart_day` so agents see the contract before any real Fitbit API call.
+- `recommended_first_calls` on the agent manifest now leads with `fitbit_quickstart` and `fitbit_demo`.
+- Tool count: 27 → 29.
+
 ## 0.1.2
 
 - Added `fitbit_agent_manifest` and `fitbit://agent-manifest` for machine-readable agent installation/runtime guidance.
