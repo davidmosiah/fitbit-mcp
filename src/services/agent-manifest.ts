@@ -18,7 +18,8 @@ const STANDARD_TOOLS = [
   "fitbit_get_hrv_day", "fitbit_get_profile", "fitbit_get_sleep_day",
   "fitbit_get_spo2_day", "fitbit_get_water_day", "fitbit_get_weight_day",
   "fitbit_list_activities", "fitbit_list_devices", "fitbit_list_sleep",
-  "fitbit_privacy_audit", "fitbit_quickstart", "fitbit_revoke_access",
+  "fitbit_onboarding", "fitbit_privacy_audit", "fitbit_profile_get",
+  "fitbit_profile_update", "fitbit_quickstart", "fitbit_revoke_access",
   "fitbit_weekly_summary", "fitbit_wellness_context"
 ];
 
@@ -52,7 +53,7 @@ export function buildAgentManifest(client: AgentClientName = "generic") {
       token_storage: "~/.fitbit-mcp/tokens.json with 0600 permissions",
       secret_storage: "~/.fitbit-mcp/config.json or FITBIT_* environment variables; never print secrets"
     },
-    recommended_first_calls: ["fitbit_quickstart", "fitbit_demo", "fitbit_connection_status", "fitbit_wellness_context", "fitbit_daily_summary"],
+    recommended_first_calls: ["fitbit_profile_get", "fitbit_quickstart", "fitbit_demo", "fitbit_connection_status", "fitbit_wellness_context", "fitbit_daily_summary"],
     standard_tools: STANDARD_TOOLS,
     resources: RESOURCES,
     hermes: {

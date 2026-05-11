@@ -9,8 +9,8 @@ const expectedTools = [
   'fitbit_get_food_day', 'fitbit_get_heart_day', 'fitbit_get_heart_intraday', 'fitbit_get_hrv_day',
   'fitbit_get_profile', 'fitbit_get_sleep_day', 'fitbit_get_spo2_day', 'fitbit_get_water_day',
   'fitbit_get_weight_day', 'fitbit_list_activities', 'fitbit_list_devices', 'fitbit_list_sleep',
-  'fitbit_privacy_audit', 'fitbit_quickstart', 'fitbit_revoke_access', 'fitbit_weekly_summary',
-  'fitbit_wellness_context'
+  'fitbit_onboarding', 'fitbit_privacy_audit', 'fitbit_profile_get', 'fitbit_profile_update',
+  'fitbit_quickstart', 'fitbit_revoke_access', 'fitbit_weekly_summary', 'fitbit_wellness_context'
 ];
 
 const expectedResources = [
