@@ -2,6 +2,7 @@ import { URL, URLSearchParams } from "node:url";
 import { DEFAULT_LIMIT, FITBIT_API_BASE_URL, FITBIT_AUTH_URL, FITBIT_REVOKE_URL, FITBIT_TOKEN_URL, MAX_FITBIT_LIMIT } from "../constants.js";
 import type { FitbitConfig, FitbitTokenSet } from "../types.js";
 import { disabledCacheStatus, FitbitCache, type CacheStatus } from "./cache.js";
+import { fetchWithRetry as fetchWithRetryMiddleware } from "./http-retry.js";
 import { redactErrorMessage } from "./redaction.js";
 import { TokenStore } from "./token-store.js";
 
@@ -247,15 +248,10 @@ export class FitbitClient {
   }
 
   private async fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const response = await fetch(url, init);
-      if (response.status !== 429 && response.status < 500) return response;
-      if (attempt === 2) return response;
-      const retryAfter = Number(response.headers.get("retry-after"));
-      const delaySeconds = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : response.status === 429 ? 60 : 2 ** attempt;
-      await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
-    }
-    throw new Error("Unreachable retry loop state");
+    return fetchWithRetryMiddleware(fetch, url, init, {
+      vendor: "fitbit",
+      envFlag: "FITBIT_NO_RETRY"
+    });
   }
 }
 
