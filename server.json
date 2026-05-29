@@ -3,7 +3,7 @@
   "name": "io.github.davidmosiah/fitbitmcp",
   "description": "Privacy-first, unofficial Fitbit MCP server for AI health, sleep, activity and heart-rate agents.",
   "repository": {
-    "url": "https://github.com/davidmosiah/fitbitmcp",
+    "url": "https://github.com/davidmosiah/fitbit-mcp",
     "source": "github"
   },
   "version": "0.4.5",

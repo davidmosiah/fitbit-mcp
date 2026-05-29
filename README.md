@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/davidmosiah/fitbitmcp/stargazers"><img src="https://img.shields.io/github/stars/davidmosiah/fitbitmcp?style=for-the-badge&labelColor=0F172A&color=FBBF24&logo=github" alt="GitHub stars" /></a>
+  <a href="https://github.com/davidmosiah/fitbit-mcp/stargazers"><img src="https://img.shields.io/github/stars/davidmosiah/fitbit-mcp?style=for-the-badge&labelColor=0F172A&color=FBBF24&logo=github" alt="GitHub stars" /></a>
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/BUILT_FOR-MCP-7C3AED?style=for-the-badge&labelColor=0F172A" alt="Built for MCP" /></a>
   <a href="https://github.com/davidmosiah/delx-wellness-hermes"><img src="https://img.shields.io/badge/HERMES-one--command_setup-10B981?style=for-the-badge&labelColor=0F172A" alt="Hermes one-command setup" /></a>
   <a href="https://github.com/davidmosiah/delx-wellness"><img src="https://img.shields.io/badge/Fitbit-00B0B9?style=for-the-badge&labelColor=0F172A&logoColor=white&logo=fitbit&logoColor=white" alt="Fitbit" /></a>
@@ -210,8 +210,8 @@ If browser OAuth has to happen on a different machine than Hermes, run `auth` lo
 ## Development
 
 ```bash
-git clone https://github.com/davidmosiah/fitbitmcp.git
-cd fitbitmcp
+git clone https://github.com/davidmosiah/fitbit-mcp.git
+cd fitbit-mcp
 npm install
 npm test
 npm run build
@@ -228,7 +228,7 @@ npx @modelcontextprotocol/inspector node dist/index.js
 - npm: <https://www.npmjs.com/package/fitbit-mcp-unofficial>
 - Docs site: <https://wellness.delx.ai/connectors/fitbit>
 - Legacy docs: <https://fitbitmcp.vercel.app/>
-- GitHub: <https://github.com/davidmosiah/fitbitmcp>
+- GitHub: <https://github.com/davidmosiah/fitbit-mcp>
 - Delx Wellness registry: <https://github.com/davidmosiah/delx-wellness>
 - Connector quality standard: <https://github.com/davidmosiah/delx-wellness/blob/main/docs/connector-quality-standard.md>
 - Fitbit Web API: <https://dev.fitbit.com/build/reference/web-api/>
@@ -245,7 +245,7 @@ The full [Delx Wellness](https://wellness.delx.ai) connector library:
 | Oura | [`oura-mcp-unofficial`](https://www.npmjs.com/package/oura-mcp-unofficial) | [ouramcp](https://github.com/davidmosiah/ouramcp) |
 | Garmin | [`garmin-mcp-unofficial`](https://www.npmjs.com/package/garmin-mcp-unofficial) | [garminmcp](https://github.com/davidmosiah/garminmcp) |
 | Strava | [`strava-mcp-unofficial`](https://www.npmjs.com/package/strava-mcp-unofficial) | [strava-mcp](https://github.com/davidmosiah/strava-mcp) |
-| Fitbit | [`fitbit-mcp-unofficial`](https://www.npmjs.com/package/fitbit-mcp-unofficial) | [fitbitmcp](https://github.com/davidmosiah/fitbitmcp) |
+| Fitbit | [`fitbit-mcp-unofficial`](https://www.npmjs.com/package/fitbit-mcp-unofficial) | [fitbit-mcp](https://github.com/davidmosiah/fitbit-mcp) |
 | Withings | [`withings-mcp-unofficial`](https://www.npmjs.com/package/withings-mcp-unofficial) | [withingsmcp](https://github.com/davidmosiah/withingsmcp) |
 | Apple Health | [`apple-health-mcp-unofficial`](https://www.npmjs.com/package/apple-health-mcp-unofficial) | [apple-health-mcp](https://github.com/davidmosiah/apple-health-mcp) |
 | Polar | [`polar-mcp-unofficial`](https://www.npmjs.com/package/polar-mcp-unofficial) | [polarmcp](https://github.com/davidmosiah/polarmcp) |
@@ -258,7 +258,7 @@ The full [Delx Wellness](https://wellness.delx.ai) connector library:
 ## 📧 Contact & Support
 
 - 📨 **support@delx.ai** — general questions, integration help, partnerships
-- 🐛 **Bug reports / feature requests** — [GitHub Issues](https://github.com/davidmosiah/fitbitmcp/issues)
+- 🐛 **Bug reports / feature requests** — [GitHub Issues](https://github.com/davidmosiah/fitbit-mcp/issues)
 - 🐦 **Updates** — [@delx369](https://x.com/delx369) on X
 - 🌐 **Site** — [wellness.delx.ai](https://wellness.delx.ai)
 
