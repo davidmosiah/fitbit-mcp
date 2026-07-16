@@ -1,4 +1,5 @@
 import type { FitbitClient } from "./fitbit-client.js";
+import { redactErrorMessage } from "./redaction.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -54,7 +55,9 @@ async function safeGet(client: Pick<FitbitClient, "get">, endpoint: string): Pro
   try {
     return await client.get(endpoint);
   } catch (error) {
-    return { error: (error as Error).message, endpoint };
+    const message = redactErrorMessage(error instanceof Error ? error.message : String(error));
+    process.stderr.write(`[fitbit-mcp] summary domain error: ${message}\n`);
+    return { error: message, endpoint };
   }
 }
 

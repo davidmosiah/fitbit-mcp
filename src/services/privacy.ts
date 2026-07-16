@@ -61,13 +61,16 @@ function normalizeProfile(record: Record<string, unknown>, mode: PrivacyMode): u
 
 function normalizeDevices(record: Record<string, unknown>, mode: PrivacyMode): unknown {
   const devices = Array.isArray(record) ? record : [record];
-  const normalized = devices.map((device) => isObject(device) ? pickDefined({
-    id: mode === "summary" ? undefined : device.id,
-    deviceVersion: device.deviceVersion,
-    type: device.type,
-    battery: device.battery,
-    lastSyncTime: device.lastSyncTime
-  }) : device);
+  const normalized = devices.map((device) => {
+    if (!isObject(device)) return device;
+    if (mode === "structured") return removeSensitive(device);
+    return pickDefined({
+      deviceVersion: device.deviceVersion,
+      type: device.type,
+      battery: device.battery,
+      lastSyncTime: device.lastSyncTime
+    });
+  });
   return Array.isArray(record) ? normalized : normalized[0];
 }
 
@@ -121,7 +124,10 @@ function normalizeVitals(record: Record<string, unknown>, mode: PrivacyMode): un
 }
 
 function normalizeWeight(record: Record<string, unknown>, mode: PrivacyMode): unknown {
-  if (Array.isArray(record.weight)) return { weight: record.weight.map((item) => isObject(item) ? normalizeWeight(item, mode) : item) };
+  if (Array.isArray(record.weight)) {
+    const weight = record.weight.map((item) => isObject(item) ? normalizeWeight(item, mode) : item);
+    return mode === "summary" ? { weight } : { ...removeSensitive(record), weight };
+  }
   return mode === "summary" ? pickDefined({ date: record.date, weight: record.weight, bmi: record.bmi }) : removeSensitive(record);
 }
 

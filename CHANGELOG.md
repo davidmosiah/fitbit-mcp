@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.6 - 2026-07-16
+
+### Fixed
+
+- Match Fitbit's activity-list contract: `afterDate` uses ascending order, `beforeDate` uses descending order, and callers cannot send both cursors together.
+- Preserve the caller's written calendar date when converting offset ISO date-times, and reject invalid cursors before any HTTP request.
+- Preserve complete structured weight envelopes and device fields while continuing to remove GPS and secret-bearing values.
+- Log redacted per-domain errors from partial summaries to stderr and add an executable HTTP-boundary regression suite.
+- Raise the transitive Hono override to 4.12.30 so production installs no longer include the audited 4.12.22 vulnerabilities.
+
 ## 0.4.3 - 2026-05-20
 
 ### Added

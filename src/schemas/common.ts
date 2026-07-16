@@ -14,8 +14,8 @@ export const DateTimeSchema = z.string()
   .describe("ISO 8601 date-time with timezone, e.g. 2026-05-01T00:00:00Z");
 
 export const CollectionInputSchema = z.object({
-  after: DateTimeSchema.describe("Only return activities after this time. Converted to Fitbit epoch seconds."),
-  before: DateTimeSchema.describe("Only return activities before this time. Converted to Fitbit epoch seconds."),
+  after: DateTimeSchema.describe("Return records after this calendar date. Converted to Fitbit afterDate; mutually exclusive with before."),
+  before: DateTimeSchema.describe("Return records before this calendar date. Converted to Fitbit beforeDate; mutually exclusive with after."),
   page: z.number().int().min(1).default(1).describe("Fitbit page number."),
   limit: z.number().int().min(1).max(MAX_FITBIT_LIMIT).default(DEFAULT_LIMIT)
     .describe("Fitbit per_page value. Fitbit allows up to 200."),

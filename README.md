@@ -140,6 +140,7 @@ This package uses the official Fitbit Web API. When this README says `raw`, it m
 **Activity**
 
 - `fitbit_get_activity_day`, `fitbit_list_activities`, `fitbit_get_activity`
+- List calls accept either `after` or `before`, matching Fitbit's mutually exclusive cursor contract. Offset ISO inputs retain their written calendar date and invalid cursors fail before HTTP.
 
 **Sleep**
 
@@ -170,6 +171,7 @@ This package uses the official Fitbit Web API. When this README says `raw`, it m
 - OAuth tokens are stored in `~/.fitbit-mcp/tokens.json` with `0600` permissions and are never returned by tools.
 - The server never prints access or refresh tokens.
 - `FITBIT_PRIVACY_MODE` defaults to `structured`. Raw Fitbit JSON is opt-in via `raw` mode or per-call override.
+- Structured mode preserves complete upstream physiological records and response metadata while removing GPS and secret-bearing fields.
 - Health data is sensitive — do not paste raw payloads publicly.
 - This is **not medical advice**. The server exposes user-authorized data for personal AI workflows, not diagnosis or treatment.
 

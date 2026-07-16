@@ -43,4 +43,23 @@ assert.equal(context.source, 'fitbit');
 assert.equal(context.sleep_score, 91);
 assert.equal(context.recent_training_load, 'normal');
 
+let capturedStderr = '';
+const originalStderrWrite = process.stderr.write.bind(process.stderr);
+process.stderr.write = (chunk) => {
+  capturedStderr += String(chunk);
+  return true;
+};
+try {
+  const partialClient = {
+    async get(endpoint) {
+      if (endpoint.includes('/sleep/date/')) throw new Error('synthetic Fitbit sleep failure');
+      return fakeClient.get(endpoint);
+    },
+  };
+  await buildDailySummary(partialClient, { days: 7, timezone: 'UTC' });
+} finally {
+  process.stderr.write = originalStderrWrite;
+}
+assert.match(capturedStderr, /\[fitbit-mcp\] summary domain error: synthetic Fitbit sleep failure/);
+
 console.log(JSON.stringify({ ok: true, daily: daily.kind, weekly: weekly.kind }, null, 2));

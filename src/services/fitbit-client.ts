@@ -92,9 +92,10 @@ export class FitbitClient {
     let pages = 0;
 
     while (pages < maxPages) {
+      const cursor = fitbitDateCursor(params);
       const payload = await this.get(path, {
-        ...fitbitDateCursor(params),
-        sort: params.before ? "asc" : "desc",
+        ...cursor,
+        sort: params.after ? "asc" : "desc",
         offset,
         limit
       });
@@ -271,6 +272,9 @@ export class FitbitClient {
 }
 
 function fitbitDateCursor(params: ListParams): Record<string, string> {
+  if (params.after && params.before) {
+    throw new Error("Fitbit list accepts either after or before, not both");
+  }
   if (params.after) return { afterDate: toDate(params.after) };
   if (params.before) return { beforeDate: toDate(params.before) };
   return { beforeDate: "today" };
@@ -278,9 +282,15 @@ function fitbitDateCursor(params: ListParams): Record<string, string> {
 
 function toDate(value: string): string {
   if (value === "today") return value;
-  const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed)) return value.slice(0, 10);
-  return new Date(parsed).toISOString().slice(0, 10);
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(value);
+  if (!match) throw new Error(`Invalid Fitbit date cursor: ${value}`);
+
+  const date = `${match[1]}-${match[2]}-${match[3]}`;
+  const parsed = new Date(`${date}T00:00:00Z`);
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
+    throw new Error(`Invalid Fitbit date cursor: ${value}`);
+  }
+  return date;
 }
 
 function extractRecords(payload: unknown): unknown[] {

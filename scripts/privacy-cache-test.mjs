@@ -32,6 +32,21 @@ assert.equal(summary.map, undefined);
 const raw = applyPrivacy('/activities/123', activity, 'raw');
 assert.equal(raw.map.summary_polyline, 'encoded');
 
+const structuredWeight = applyPrivacy('/body/log/weight/date/2026-07-08.json', {
+  weight: [{ date: '2026-07-08', weight: 80, futureMetric: 17 }],
+  pagination: { afterDate: '2026-07-08' },
+}, 'structured');
+assert.equal(structuredWeight.weight[0].futureMetric, 17);
+assert.deepEqual(structuredWeight.pagination, { afterDate: '2026-07-08' });
+
+const structuredDevice = applyPrivacy('/devices.json', {
+  id: 'device-1',
+  deviceVersion: 'Synthetic',
+  battery: 'High',
+  futureCapability: { ecg: true },
+}, 'structured');
+assert.deepEqual(structuredDevice.futureCapability, { ecg: true });
+
 const streams = normalizeStreams({ heartrate: { data: [120, 121] }, latlng: { data: [[1, 2]] } }, 'structured', false);
 assert.equal(streams.latlng, undefined);
 assert.deepEqual(streams.heartrate.data, [120, 121]);
