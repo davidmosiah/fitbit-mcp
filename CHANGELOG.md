@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.7 - 2026-07-30
+
+### Fixed
+
+- **Pagination `next_page` off-by-one** — a full single-page list reported `next_page` equal to the current page (`floor(offset/limit)+1` without advancing offset). Agents re-requested the same page. Now `next_page = startPage + pages_fetched`.
+- **Day-tool date normalization** — `fitbit_get_*_day` and heart-intraday now reduce ISO date-times (`2026-07-08T23:00:00-03:00`) to the written civil day before building Fitbit path segments, matching list-cursor behavior. Rejects garbage dates before HTTP.
+
 ## 0.4.6 - 2026-07-16
 
 ### Fixed

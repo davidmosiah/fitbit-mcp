@@ -78,6 +78,65 @@ try {
     failures.push(error);
   }
 
+  // Full single page must advertise the *next* page, not the current one.
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    requestedUrls.push(url);
+    return Response.json({
+      activities: Array.from({ length: 20 }, (_, i) => ({ logId: 2000 + i, activityName: `Run ${i}` })),
+    });
+  };
+  try {
+    const page1 = await client.list('/1/user/-/activities/list.json', { limit: 20, page: 1 });
+    assert.equal(page1.records.length, 20);
+    assert.equal(page1.next_page, 2, 'full page 1 must set next_page=2');
+    assert.equal(page1.pages_fetched, 1);
+
+    const page3 = await client.list('/1/user/-/activities/list.json', { limit: 20, page: 3 });
+    assert.equal(page3.next_page, 4, 'full page 3 must set next_page=4');
+  } catch (error) {
+    failures.push(error);
+  }
+
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    requestedUrls.push(url);
+    return Response.json({
+      activities: Array.from({ length: 20 }, (_, i) => ({ logId: 3000 + i, activityName: `Walk ${i}` })),
+    });
+  };
+  try {
+    const multi = await client.list('/1/user/-/activities/list.json', { limit: 20, all_pages: true, max_pages: 2 });
+    assert.equal(multi.records.length, 40);
+    assert.equal(multi.pages_fetched, 2);
+    assert.equal(multi.next_page, 3, 'after two full pages next_page must be 3');
+  } catch (error) {
+    failures.push(error);
+  }
+
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    requestedUrls.push(url);
+    return Response.json({ activities: [{ logId: 1, activityName: 'Partial' }] });
+  };
+  try {
+    const partial = await client.list('/1/user/-/activities/list.json', { limit: 20, page: 1 });
+    assert.equal(partial.next_page, undefined, 'partial page must not set next_page');
+  } catch (error) {
+    failures.push(error);
+  }
+
+  // Civil-date helper: ISO date-times reduce to the written calendar day.
+  try {
+    const { toFitbitCivilDate } = await import('../dist/services/fitbit-client.js');
+    assert.equal(toFitbitCivilDate('2026-07-08'), '2026-07-08');
+    assert.equal(toFitbitCivilDate('2026-07-08T23:00:00-03:00'), '2026-07-08');
+    assert.equal(toFitbitCivilDate('today'), 'today');
+    await assert.rejects(async () => toFitbitCivilDate('not-a-date'), /Invalid Fitbit date/);
+  } catch (error) {
+    failures.push(error);
+  }
+
   if (failures.length) throw new AggregateError(failures, 'Fitbit endpoint contract regressions');
   console.log(JSON.stringify({ ok: true, suite: 'endpoint-contracts', requests: requestedUrls.length }, null, 2));
 } finally {

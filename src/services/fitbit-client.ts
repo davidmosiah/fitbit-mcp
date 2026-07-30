@@ -106,7 +106,15 @@ export class FitbitClient {
       offset += limit;
     }
 
-    return { records, next_page: records.length && records.length % limit === 0 ? Math.floor(offset / limit) + 1 : undefined, pages_fetched: pages };
+    // Full last page ⇒ more data may exist. next_page is startPage + pages
+    // fetched (not floor(offset/limit)+1, which equals the *current* page when
+    // offset is not advanced after a single-page fetch).
+    const startPage = Math.max(params.page ?? 1, 1);
+    return {
+      records,
+      next_page: records.length && records.length % limit === 0 ? startPage + pages : undefined,
+      pages_fetched: pages
+    };
   }
 
   private extractCode(input: string): string {
@@ -280,17 +288,25 @@ function fitbitDateCursor(params: ListParams): Record<string, string> {
   return { beforeDate: "today" };
 }
 
-function toDate(value: string): string {
+/**
+ * Normalize a Fitbit civil date for path segments and list cursors.
+ * Accepts `today`, `YYYY-MM-DD`, or an ISO date-time (uses the written calendar day).
+ */
+export function toFitbitCivilDate(value: string, field = "date"): string {
   if (value === "today") return value;
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(value);
-  if (!match) throw new Error(`Invalid Fitbit date cursor: ${value}`);
+  if (!match) throw new Error(`Invalid Fitbit ${field}: expected yyyy-MM-dd or today`);
 
   const date = `${match[1]}-${match[2]}-${match[3]}`;
   const parsed = new Date(`${date}T00:00:00Z`);
   if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) {
-    throw new Error(`Invalid Fitbit date cursor: ${value}`);
+    throw new Error(`Invalid Fitbit ${field}: ${value}`);
   }
   return date;
+}
+
+function toDate(value: string): string {
+  return toFitbitCivilDate(value, "date cursor");
 }
 
 function extractRecords(payload: unknown): unknown[] {

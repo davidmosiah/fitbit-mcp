@@ -37,7 +37,7 @@ import { bulletList, formatCollection, makeError, makeResponse } from "../servic
 import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
 import { buildDailySummary, buildWeeklySummary, formatSummaryMarkdown } from "../services/summary.js";
 import { buildWellnessContext, formatWellnessContextMarkdown } from "../services/context.js";
-import { FitbitClient } from "../services/fitbit-client.js";
+import { FitbitClient, toFitbitCivilDate } from "../services/fitbit-client.js";
 import {
   buildProfileSummary,
   getOnboardingFlow,
@@ -48,13 +48,13 @@ import {
 } from "../services/profile-store.js";
 
 const DateReadInputSchema = z.object({
-  date: z.string().default("today").describe("Date as yyyy-MM-dd or today."),
+  date: z.string().default("today").describe("Date as yyyy-MM-dd or today. ISO date-times are accepted and reduced to the written calendar day."),
   privacy_mode: SimpleReadInputSchema.shape.privacy_mode,
   response_format: ResponseFormatSchema
 }).strict();
 
 const HeartIntradayInputSchema = z.object({
-  date: z.string().default("today").describe("Date as yyyy-MM-dd or today."),
+  date: z.string().default("today").describe("Date as yyyy-MM-dd or today. ISO date-times are accepted and reduced to the written calendar day."),
   detail_level: z.enum(["1sec", "1min", "5min", "15min"]).default("1min"),
   start_time: z.string().regex(/^\d{2}:\d{2}$/).optional().describe("Optional HH:mm start time."),
   end_time: z.string().regex(/^\d{2}:\d{2}$/).optional().describe("Optional HH:mm end time."),
@@ -113,7 +113,8 @@ function registerDateTool(server: McpServer, name: string, title: string, endpoi
       try {
         const config = getConfig();
         const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
-        const endpoint = endpointBuilder(params.date);
+        const date = toFitbitCivilDate(params.date);
+        const endpoint = endpointBuilder(date);
         const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
         return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList(title, { endpoint, data: JSON.stringify(data) }));
       } catch (error) {
@@ -407,8 +408,9 @@ export function registerFitbitTools(server: McpServer): void {
     try {
       const config = getConfig();
       const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+      const date = toFitbitCivilDate(params.date);
       const suffix = params.start_time && params.end_time ? `/time/${params.start_time}/${params.end_time}` : "";
-      const endpoint = `/1/user/-/activities/heart/date/${params.date}/1d/${params.detail_level}${suffix}.json`;
+      const endpoint = `/1/user/-/activities/heart/date/${date}/1d/${params.detail_level}${suffix}.json`;
       const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
       return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList("Fitbit Heart Intraday", { endpoint, privacy_mode: privacyMode, data: JSON.stringify(data) }));
     } catch (error) {
