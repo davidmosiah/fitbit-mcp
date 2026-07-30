@@ -79,7 +79,7 @@ function registerCollectionTool(server: McpServer, name: string, title: string, 
     async (params) => {
       try {
         const config = getConfig();
-        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode, { explicit_user_intent: (params as { explicit_user_intent?: boolean }).explicit_user_intent, include_gps: (params as { include_gps?: boolean }).include_gps });
         const result = await new FitbitClient(config).list(endpoint, params);
         const records = applyPrivacy(endpoint, { records: result.records }, privacyMode) as { records: unknown[] };
         const output = {
@@ -112,7 +112,7 @@ function registerDateTool(server: McpServer, name: string, title: string, endpoi
     async (params) => {
       try {
         const config = getConfig();
-        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode, { explicit_user_intent: (params as { explicit_user_intent?: boolean }).explicit_user_intent, include_gps: (params as { include_gps?: boolean }).include_gps });
         const date = toFitbitCivilDate(params.date);
         const endpoint = endpointBuilder(date);
         const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
@@ -137,7 +137,7 @@ function registerGetByIdTool(server: McpServer, name: string, title: string, end
     async (params) => {
       try {
         const config = getConfig();
-        const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+        const privacyMode = resolvePrivacyMode(config, params.privacy_mode, { explicit_user_intent: (params as { explicit_user_intent?: boolean }).explicit_user_intent, include_gps: (params as { include_gps?: boolean }).include_gps });
         const endpoint = endpointBuilder(params.id);
         const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
         return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList(title, { endpoint, data: JSON.stringify(data) }));
@@ -353,11 +353,11 @@ export function registerFitbitTools(server: McpServer): void {
     inputSchema: SimpleReadInputSchema.shape,
     outputSchema: EndpointDataOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
-  }, async ({ response_format, privacy_mode }) => {
+  }, async ({ response_format, privacy_mode, explicit_user_intent }) => {
     try {
       const config = getConfig();
       const endpoint = "/1/user/-/profile.json";
-      const privacyMode = resolvePrivacyMode(config, privacy_mode);
+      const privacyMode = resolvePrivacyMode(config, privacy_mode, { explicit_user_intent });
       const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
       return makeResponse({ endpoint, privacy_mode: privacyMode, data }, response_format, bulletList("Fitbit Profile", data as Record<string, unknown>));
     } catch (error) {
@@ -371,11 +371,11 @@ export function registerFitbitTools(server: McpServer): void {
     inputSchema: SimpleReadInputSchema.shape,
     outputSchema: EndpointDataOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
-  }, async ({ response_format, privacy_mode }) => {
+  }, async ({ response_format, privacy_mode, explicit_user_intent }) => {
     try {
       const config = getConfig();
       const endpoint = "/1/user/-/devices.json";
-      const privacyMode = resolvePrivacyMode(config, privacy_mode);
+      const privacyMode = resolvePrivacyMode(config, privacy_mode, { explicit_user_intent });
       const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
       return makeResponse({ endpoint, privacy_mode: privacyMode, data }, response_format, bulletList("Fitbit Devices", { data: JSON.stringify(data) }));
     } catch (error) {
@@ -407,7 +407,7 @@ export function registerFitbitTools(server: McpServer): void {
   }, async (params) => {
     try {
       const config = getConfig();
-      const privacyMode = resolvePrivacyMode(config, params.privacy_mode);
+      const privacyMode = resolvePrivacyMode(config, params.privacy_mode, { explicit_user_intent: (params as { explicit_user_intent?: boolean }).explicit_user_intent, include_gps: (params as { include_gps?: boolean }).include_gps });
       const date = toFitbitCivilDate(params.date);
       const suffix = params.start_time && params.end_time ? `/time/${params.start_time}/${params.end_time}` : "";
       const endpoint = `/1/user/-/activities/heart/date/${date}/1d/${params.detail_level}${suffix}.json`;

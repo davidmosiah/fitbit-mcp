@@ -2,6 +2,13 @@
 
 
 
+
+## 0.4.10 - 2026-07-30
+
+### Security
+
+- Agent-requested `privacy_mode=raw` and `include_gps=true` require `explicit_user_intent=true` (config-default raw still allowed without per-call intent).
+
 ## 0.4.9 - 2026-07-30
 
 ### Security
