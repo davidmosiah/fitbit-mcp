@@ -466,12 +466,24 @@ export function registerFitbitTools(server: McpServer): void {
 
   server.registerTool("fitbit_revoke_access", {
     title: "Revoke Fitbit OAuth Access",
-    description: "Revoke the current Fitbit OAuth grant and delete the local token file. Use only when the user explicitly wants to disconnect Fitbit.",
-    inputSchema: ResponseOnlyInputSchema.shape,
+    description: "Revoke the current Fitbit OAuth grant and delete the local token file. Use only when the user explicitly wants to disconnect Fitbit. Gated by explicit_user_intent: true (requires explicit user intent).",
+    inputSchema: {
+      explicit_user_intent: z
+        .boolean()
+        .optional()
+        .describe("Must be true after the user explicitly asked to disconnect. Prevents agents from revoking autonomously."),
+      response_format: z.enum(["markdown", "json"]).default("markdown")
+    },
     outputSchema: RevokeAccessOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true }
-  }, async ({ response_format }) => {
+  }, async ({ explicit_user_intent, response_format }) => {
     try {
+      if (explicit_user_intent !== true) {
+        return makeError(
+          "USER_ACTION_REQUIRED: explicit_user_intent must be true to revoke access. Ask the user to confirm disconnect first."
+        );
+      }
+
       const result = await client().revokeAccess();
       const output = { ...result, note: "Fitbit access was revoked and local tokens were removed. Re-authorize before future API calls." };
       return makeResponse(output, response_format, bulletList("Fitbit Access Revoked", output));
