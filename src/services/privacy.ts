@@ -37,8 +37,11 @@ export function normalizeRecord(endpoint: string, record: unknown, mode: Privacy
 export function normalizeStreams(payload: unknown, mode: PrivacyMode, includeGps: boolean): unknown {
   if (mode === "raw") return payload;
   if (!isObject(payload)) return payload;
-  const clean = removeSensitive(payload);
-  if (!includeGps) { delete clean["activities-tracker-gps"]; delete clean.latlng; delete clean.gps; }
+  let clean = removeSensitive(payload);
+  if (!includeGps) {
+    // Recursive strip: GPS may appear nested under stream series / activity details.
+    clean = deepRedact(clean, isGpsKey) as Record<string, unknown>;
+  }
   if (mode === "summary") return summarizeUnknown(clean);
   return clean;
 }
@@ -146,8 +149,54 @@ function summarizeUnknown(record: Record<string, unknown>): Record<string, unkno
   });
 }
 
-function removeSensitive(record: Record<string, unknown>): Record<string, unknown> {
-  const clone = { ...record };
-  for (const key of ["email", "fullName", "firstName", "lastName", "avatar", "avatar150", "features", "access_token", "refresh_token", "start_latlng", "end_latlng", "latlng", "map", "polyline", "summary_polyline", "gps", "tcxLink"] ) delete clone[key];
+function isSensitiveKey(key: string): boolean {
+  return [
+    "email",
+    "fullName",
+    "firstName",
+    "lastName",
+    "avatar",
+    "avatar150",
+    "features",
+    "access_token",
+    "refresh_token",
+    "tcxLink"
+  ].includes(key);
+}
+
+function isGpsKey(key: string): boolean {
+  return [
+    "start_latlng",
+    "end_latlng",
+    "latlng",
+    "latitude",
+    "longitude",
+    "lat",
+    "lon",
+    "lng",
+    "coordinates",
+    "coordinate",
+    "map",
+    "polyline",
+    "summary_polyline",
+    "gps",
+    "gpx",
+    "activities-tracker-gps"
+  ].includes(key);
+  // Note: do not drop whole "points" arrays — recurse so elev/time can remain.
+}
+
+function deepRedact(value: unknown, dropKey: (key: string) => boolean): unknown {
+  if (Array.isArray(value)) return value.map((item) => deepRedact(item, dropKey));
+  if (!isObject(value)) return value;
+  const clone: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (dropKey(key)) continue;
+    clone[key] = deepRedact(child, dropKey);
+  }
   return clone;
+}
+
+function removeSensitive(record: Record<string, unknown>): Record<string, unknown> {
+  return deepRedact(record, (key) => isSensitiveKey(key) || isGpsKey(key)) as Record<string, unknown>;
 }

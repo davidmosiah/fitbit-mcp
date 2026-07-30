@@ -51,6 +51,26 @@ const streams = normalizeStreams({ heartrate: { data: [120, 121] }, latlng: { da
 assert.equal(streams.latlng, undefined);
 assert.deepEqual(streams.heartrate.data, [120, 121]);
 
+// Nested GPS must not survive structured mode (recursive redaction).
+const nested = applyPrivacy('/1/user/-/activities/99.json', {
+  activityId: 99,
+  averageHeartRate: 130,
+  path: {
+    points: [
+      { latitude: 10, longitude: 20, elev: 100 },
+      { latitude: 11, longitude: 21, elev: 110 },
+    ],
+  },
+  map: { summary_polyline: 'secret-route', color: 'blue' },
+  nested: { latlng: [1, 2], name: 'keep' },
+}, 'structured');
+assert.equal(nested.averageHeartRate, 130);
+assert.equal(nested.map, undefined, 'map key is GPS-class and must be dropped entirely');
+assert.equal(nested.path?.points?.[0]?.latitude, undefined);
+assert.equal(nested.path?.points?.[0]?.elev, 100);
+assert.equal(nested.nested?.latlng, undefined);
+assert.equal(nested.nested?.name, 'keep');
+
 assert.equal(redactSensitive({ access_token: 'abc', nested: { client_secret: 'def' } }).access_token, '[REDACTED]');
 assert.match(redactErrorMessage('Authorization: Bearer abc.def.ghi'), /REDACTED/);
 assert.equal(buildPrivacyAudit().unofficial, true);
