@@ -333,7 +333,7 @@ export function registerFitbitTools(server: McpServer): void {
 
   server.registerTool("fitbit_exchange_code", {
     title: "Exchange Fitbit OAuth Code",
-    description: "Exchange a Fitbit OAuth authorization code for local tokens. Tokens are stored locally with 0600 permissions and are never returned.",
+    description: "Exchange a Fitbit OAuth authorization code for local tokens. Tokens are stored locally with 0600 permissions and are never returned. Requires explicit user action: the user must complete browser OAuth and supply the authorization code (agents must not invent codes).",
     inputSchema: ExchangeCodeInputSchema.shape,
     outputSchema: ExchangeCodeOutputSchema.shape,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true }
