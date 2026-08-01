@@ -32,6 +32,7 @@ import { buildAgentManifest, formatAgentManifestMarkdown } from "../services/age
 import { buildCapabilities } from "../services/capabilities.js";
 import { buildDataInventory, formatInventoryMarkdown } from "../services/inventory.js";
 import { buildConnectionStatus } from "../services/connection-status.js";
+import { buildDemoPayload } from "../services/demo.js";
 import { getConfig } from "../services/config.js";
 import { bulletList, formatCollection, makeError, makeResponse } from "../services/format.js";
 import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
@@ -254,62 +255,15 @@ export function registerFitbitTools(server: McpServer): void {
     inputSchema: ResponseOnlyInputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
   }, async ({ response_format }) => {
-    const today = new Date().toISOString().slice(0, 10);
-    const payload = {
-      ok: true,
-      is_demo: true,
-      sample: {
-        fitbit_daily_summary: {
-          date: today,
-          activity: { steps: 8420, active_minutes: 38, calories_out: 2310, distance_km: 6.4, floors: 12 },
-          sleep: { score: 78, duration_min: 446, efficiency: 92, stages: { rem_min: 88, deep_min: 64, light_min: 248, wake_min: 46 } },
-          heart: { resting_heart_rate: 56, fat_burn_min: 42, cardio_min: 18, peak_min: 4 },
-          hrv: { daily_rmssd_ms: 42 },
-        },
-        fitbit_wellness_context: {
-          window: "last_24h",
-          sleep_score: 78,
-          sleep_duration_min: 446,
-          steps: 8420,
-          resting_heart_rate: 56,
-          hrv_ms: 42,
-          activity_load: "moderate",
-          recommendation: "Solid recovery night with good sleep efficiency. RHR slightly elevated vs. baseline — keep today's training conversational and hydrate. Aim for protein-forward meals to support overnight recovery.",
-        },
-        fitbit_get_heart_day: {
-          endpoint: "/1/user/-/activities/heart/date/" + today + "/1d.json",
-          privacy_mode: "structured",
-          data: {
-            "activities-heart": [
-              {
-                dateTime: today,
-                value: {
-                  restingHeartRate: 56,
-                  heartRateZones: [
-                    { name: "Out of Range", min: 30, max: 92, minutes: 1147 },
-                    { name: "Fat Burn", min: 92, max: 129, minutes: 42 },
-                    { name: "Cardio", min: 129, max: 158, minutes: 18 },
-                    { name: "Peak", min: 158, max: 220, minutes: 4 },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-      notes: [
-        "All sample data is synthetic; tagged with is_demo=true.",
-        "Real calls return live data from the Fitbit Web API after OAuth setup.",
-        "Some endpoints (e.g. intraday heart rate) may require Fitbit Developer app type approval.",
-      ],
-    };
+    const payload = buildDemoPayload();
     const markdown = bulletList("Fitbit Demo", {
       is_demo: true,
-      steps: 8420,
-      sleep_score: 78,
-      resting_heart_rate: 56,
-      hrv_ms: 42,
-      recommendation: payload.sample.fitbit_wellness_context.recommendation,
+      steps: payload.sample.fitbit_daily_summary.scorecard.steps,
+      sleep_efficiency: payload.sample.fitbit_daily_summary.scorecard.sleep_efficiency,
+      resting_heart_rate: payload.sample.fitbit_daily_summary.scorecard.resting_heart_rate,
+      hrv_rmssd: payload.sample.fitbit_daily_summary.scorecard.hrv_rmssd,
+      readiness_context: payload.sample.fitbit_daily_summary.diagnostic.readiness_context,
+      wellness_context: payload.sample.fitbit_wellness_context.telegram_summary,
     });
     return makeResponse(payload, response_format, markdown);
   });

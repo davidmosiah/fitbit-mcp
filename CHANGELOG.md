@@ -1,3 +1,39 @@
+## 0.5.0 - 2026-08-01
+
+### Fixed
+
+- **`fitbit_demo` returned a shape the server never produces.** Every key of the
+  `fitbit_daily_summary` example was invented (`date`, `activity.*` including a
+  `floors` field that does not exist anywhere in this server, `sleep.stages.*`,
+  `heart.fat_burn_min`, `hrv.daily_rmssd_ms`) and all 35 real key paths were
+  missing (`kind`, `generated_at`, `window.*`, `data_quality.*`, `scorecard.*`,
+  `diagnostic.*`, `safety.*`). The `fitbit_wellness_context` example invented 7
+  keys (`window`, `steps`, `resting_heart_rate`, `hrv_ms`, `sleep_duration_min`,
+  `activity_load`, `recommendation`) and omitted 14, including `source`,
+  `recent_training_load`, `soreness`, `injury_flags`, `notes`, `data_quality`
+  and `telegram_summary`. Neither example satisfied the `outputSchema` its own
+  tool declares. An agent that trusted the demo — its entire stated purpose —
+  wrote a parser for data that never arrives and missed every field that does.
+- Worst case for a consumer: `activity_load: "moderate"` is not a value this
+  server can emit (the enum is `low|normal|high|unknown`), so a branch on the
+  documented value never fires and never errors — it silently falls through.
+  Likewise `sleep_score` is the sleep *efficiency* percentage, not Fitbit's
+  0-100 sleep score, so even the one key both shapes shared meant a different
+  metric.
+- `fitbit_get_heart_day` example omitted `caloriesOut` on each heart-rate zone.
+
+### Added
+
+- `scripts/demo-contract-test.mjs` (`npm run test:demo-contract`, wired into
+  `npm test`): runs the real `buildDailySummary`, `buildWellnessContext` and
+  `applyPrivacy` over a synthetic Fitbit API fixture, extracts recursive key
+  paths and fails in **both** directions — a key the demo invents, and a
+  contract key the demo omits. Also validates every sample against the zod
+  `outputSchema` its tool declares. This is what makes the drift above unable
+  to return.
+- Demo payload moved to `src/services/demo.ts` so the gate can import it
+  instead of trusting a copy.
+
 ## 0.4.11 - 2026-07-30
 
 ### Added / Fixed
