@@ -44,12 +44,12 @@ Return:
 
   server.registerPrompt("fitbit_intraday_investigation", {
     title: "Fitbit Intraday Heart Investigation",
-    description: "Investigate one day of Fitbit heart-rate samples when API access permits intraday data.",
+    description: "Investigate one day of Fitbit heart-rate with agent-safe series (prefer series over raw intraday dump).",
     argsSchema: { date: z.string().describe("yyyy-MM-dd or today"), detail_level: z.enum(["1sec", "1min", "5min", "15min"]).optional() }
-  }, ({ date, detail_level }) => userPrompt(`Call fitbit_get_heart_intraday for date=${date}, detail_level=${detail_level ?? "1min"}, response_format=json.
+  }, ({ date, detail_level }) => userPrompt(`Call fitbit_heart_series for date=${date}, detail_level=${detail_level ?? "1min"}, response_format=json (agent-safe-series/v1 — exact stats + bounded points). Only call fitbit_get_heart_intraday if you truly need the raw multi-key dump.
 
 Explain:
-- what the samples can and cannot prove
+- what the samples can and cannot prove (use stats, coverage_ratio, notes)
 - notable periods or missing data
 - whether follow-up should use sleep/activity tools
 - no diagnosis or alarmism.`));

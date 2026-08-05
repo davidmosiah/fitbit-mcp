@@ -5,7 +5,8 @@ export type AgentClientName = typeof AGENT_CLIENTS[number];
 
 export const HERMES_DIRECT_TOOLS = [
   "mcp_fitbit_fitbit_agent_manifest", "mcp_fitbit_fitbit_connection_status", "mcp_fitbit_fitbit_daily_summary",
-  "mcp_fitbit_fitbit_data_inventory", "mcp_fitbit_fitbit_get_heart_day", "mcp_fitbit_fitbit_get_heart_intraday",
+  "mcp_fitbit_fitbit_data_inventory", "mcp_fitbit_fitbit_get_heart_day", "mcp_fitbit_fitbit_heart_series",
+  "mcp_fitbit_fitbit_get_heart_intraday",
   "mcp_fitbit_fitbit_get_sleep_day", "mcp_fitbit_fitbit_weekly_summary", "mcp_fitbit_fitbit_wellness_context"
 ];
 
@@ -17,6 +18,7 @@ const STANDARD_TOOLS = [
   "fitbit_get_food_day", "fitbit_get_heart_day", "fitbit_get_heart_intraday",
   "fitbit_get_hrv_day", "fitbit_get_profile", "fitbit_get_sleep_day",
   "fitbit_get_spo2_day", "fitbit_get_water_day", "fitbit_get_weight_day",
+  "fitbit_heart_series",
   "fitbit_list_activities", "fitbit_list_devices", "fitbit_list_sleep",
   "fitbit_onboarding", "fitbit_privacy_audit", "fitbit_profile_get",
   "fitbit_profile_update", "fitbit_quickstart", "fitbit_revoke_access",
@@ -133,6 +135,7 @@ Use this skill whenever a user asks Hermes to inspect Fitbit activity, sleep, he
 ## Rules
 - Start with \`mcp_fitbit_fitbit_connection_status\`.
 - Prefer \`mcp_fitbit_fitbit_daily_summary\` and \`mcp_fitbit_fitbit_weekly_summary\` before low-level endpoint calls.
+- Prefer \`mcp_fitbit_fitbit_heart_series\` over raw \`mcp_fitbit_fitbit_get_heart_intraday\` when you need HR shape over a day (agent-safe-series/v1).
 - Treat Fitbit data as sensitive. Do not request raw payloads unless the user explicitly asks.
 - Do not diagnose or treat medical conditions.
 - Reload MCP with \`/reload-mcp\` or \`hermes mcp test fitbit\`; do not restart the gateway for normal data access.

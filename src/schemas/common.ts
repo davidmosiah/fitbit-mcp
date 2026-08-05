@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { DEFAULT_LIMIT, DEFAULT_MAX_PAGES, MAX_PAGES, MAX_FITBIT_LIMIT } from "../constants.js";
 import { AGENT_CLIENTS } from "../services/agent-manifest.js";
+import {
+  SERIES_DEFAULT_MAX_POINTS,
+  SERIES_DEFAULT_RESOLUTION_SECONDS,
+  SERIES_HARD_MAX_POINTS,
+  SERIES_METRICS
+} from "../services/series.js";
 
 export const ResponseFormatSchema = z.enum(["markdown", "json"]).default("markdown");
 export const AgentClientSchema = z.enum(AGENT_CLIENTS).default("generic");
@@ -43,6 +49,75 @@ export const SimpleReadInputSchema = z.object({
   privacy_mode: PrivacyModeSchema,
   explicit_user_intent: ExplicitPrivacyIntentSchema,
   response_format: ResponseFormatSchema
+}).strict();
+
+export const HeartSeriesInputSchema = z.object({
+  date: z.string().default("today").describe("Date as yyyy-MM-dd or today. ISO date-times are reduced to the written calendar day."),
+  detail_level: z.enum(["1sec", "1min", "5min", "15min"]).default("1min")
+    .describe("Upstream Fitbit sample density. Series tool still enforces max_points server-side. Prefer 1min; 1sec needs personal/intraday access."),
+  start_time: z.string().regex(/^\d{2}:\d{2}$/).optional().describe("Optional HH:mm window start (local Fitbit day)."),
+  end_time: z.string().regex(/^\d{2}:\d{2}$/).optional().describe("Optional HH:mm window end (local Fitbit day)."),
+  resolution_seconds: z.number().int().min(1).max(3600).default(SERIES_DEFAULT_RESOLUTION_SECONDS)
+    .describe("Requested bucket width. Raised automatically under max_points pressure."),
+  max_points: z.number().int().min(1).max(SERIES_HARD_MAX_POINTS).default(SERIES_DEFAULT_MAX_POINTS)
+    .describe(`Point budget. Server hard cap is ${SERIES_HARD_MAX_POINTS}.`),
+  reference_max_hr: z.number().int().min(100).max(240).optional()
+    .describe("Reference max HR for zone math (reference_source=caller_provided)."),
+  response_format: ResponseFormatSchema
+}).strict();
+
+const SeriesPointSchema = z.object({
+  t: z.number(),
+  value: z.number(),
+  min: z.number(),
+  max: z.number(),
+  samples: z.number().int().positive()
+}).strict();
+
+export const HeartSeriesOutputSchema = z.object({
+  contract_version: z.literal("agent-safe-series/v1"),
+  activity_id: z.union([z.string(), z.number()]),
+  metric: z.enum(SERIES_METRICS),
+  unit: z.string(),
+  start_time: z.string().optional(),
+  t_unit: z.literal("seconds_from_start"),
+  resolution_seconds: z.number(),
+  requested_resolution_seconds: z.number(),
+  points: z.array(SeriesPointSchema),
+  stats: z.object({
+    avg: z.number(),
+    min: z.number(),
+    max: z.number(),
+    p25: z.number(),
+    p50: z.number(),
+    p75: z.number(),
+    percentile_method: z.literal("linear_interpolation")
+  }).strict(),
+  time_in_zone: z.object({
+    zone_model: z.literal("percent_of_reference_max_hr"),
+    reference_max_hr: z.number(),
+    reference_source: z.enum(["caller_provided", "activity_recorded_max", "observed_max"]),
+    zones: z.array(z.object({
+      zone: z.number().int(),
+      min_bpm: z.number(),
+      max_bpm: z.number().nullable(),
+      seconds: z.number(),
+      percent: z.number()
+    }).strict())
+  }).strict().optional(),
+  downsampled: z.boolean(),
+  source_points: z.number().int().nonnegative(),
+  returned_points: z.number().int().nonnegative(),
+  method: z.enum(["time_bucket_mean", "none"]),
+  data_quality: z.object({
+    expected_samples: z.number().int().nonnegative(),
+    actual_samples: z.number().int().nonnegative(),
+    coverage_ratio: z.number().min(0).max(1),
+    longest_gap_seconds: z.number().nonnegative(),
+    sample_interval_seconds: z.number().positive(),
+    coverage_anchor: z.enum(["nominal_duration", "sample_span"])
+  }).strict(),
+  notes: z.array(z.string())
 }).strict();
 
 export const ResponseOnlyInputSchema = z.object({
@@ -310,6 +385,7 @@ export const WellnessContextOutputSchema = z.object({
 export type CollectionInput = z.infer<typeof CollectionInputSchema>;
 export type IdInput = z.infer<typeof IdInputSchema>;
 export type SimpleReadInput = z.infer<typeof SimpleReadInputSchema>;
+export type HeartSeriesInput = z.infer<typeof HeartSeriesInputSchema>;
 export type ResponseOnlyInput = z.infer<typeof ResponseOnlyInputSchema>;
 export type AgentManifestInput = z.infer<typeof AgentManifestInputSchema>;
 export type AuthUrlInput = z.infer<typeof AuthUrlInputSchema>;

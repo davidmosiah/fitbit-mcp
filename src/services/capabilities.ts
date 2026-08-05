@@ -32,7 +32,7 @@ export function buildCapabilities() {
       { name: "Profile and devices", examples: ["profile", "timezone", "units", "connected devices", "last sync"], tools: ["fitbit_get_profile", "fitbit_list_devices"] },
       { name: "Activity", examples: ["steps", "calories", "distance", "active minutes", "activity logs"], tools: ["fitbit_get_activity_day", "fitbit_list_activities", "fitbit_get_activity"] },
       { name: "Sleep", examples: ["sleep logs", "stages", "duration", "efficiency"], tools: ["fitbit_get_sleep_day", "fitbit_list_sleep"] },
-      { name: "Heart and recovery context", examples: ["daily resting heart rate", "heart zones", "intraday heart rate", "HRV", "SpO2", "breathing rate"], tools: ["fitbit_get_heart_day", "fitbit_get_heart_intraday", "fitbit_get_hrv_day", "fitbit_get_spo2_day", "fitbit_get_breathing_rate_day"] },
+      { name: "Heart and recovery context", examples: ["daily resting heart rate", "heart zones", "bounded agent-safe series", "intraday heart rate", "HRV", "SpO2", "breathing rate"], tools: ["fitbit_get_heart_day", "fitbit_heart_series", "fitbit_get_heart_intraday", "fitbit_get_hrv_day", "fitbit_get_spo2_day", "fitbit_get_breathing_rate_day"] },
       { name: "Body and nutrition", examples: ["weight", "food logs", "water logs"], tools: ["fitbit_get_weight_day", "fitbit_get_food_day", "fitbit_get_water_day"] }
     ],
     recommended_agent_flow: [
@@ -40,6 +40,7 @@ export function buildCapabilities() {
       "Call fitbit_connection_status before calling Fitbit data tools.",
       "If setup is incomplete, guide the user through setup, auth and doctor.",
       "Use fitbit_daily_summary or fitbit_weekly_summary before low-level endpoint tools.",
+      "Prefer fitbit_heart_series over fitbit_get_heart_intraday for agent context (agent-safe-series/v1, hard point caps).",
       "Use fitbit_wellness_context when handing sleep/activity context to Exercise Catalog.",
       "Treat health data as sensitive; avoid raw payloads unless explicitly requested.",
       "Use Fitbit as trend context, not medical diagnosis. Escalate symptoms or abnormal vitals to clinicians."

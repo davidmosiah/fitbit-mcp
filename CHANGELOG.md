@@ -1,3 +1,21 @@
+## 0.6.0 - 2026-08-05
+
+### Added
+
+- **`fitbit_heart_series`** — bounded heart-rate series for one civil day under
+  the shared **`agent-safe-series/v1`** contract (Garmin MCP, Strava MCP, Kindred
+  Mi Fitness; [garmin-mcp#19](https://github.com/davidmosiah/garmin-mcp/issues/19)):
+  - Exact full-resolution stats + hard-capped points (default 400 / max 500)
+  - `coverage_anchor` (`nominal_duration` for full day or HH:mm window)
+  - `reference_source`: `caller_provided` | `activity_recorded_max` | `observed_max`
+  - Optional `start_time`/`end_time` window with rebased `t` offsets
+  - Synthetic fixture + regression tests
+
+### Changed
+
+- Prefer `fitbit_heart_series` over raw `fitbit_get_heart_intraday` in agent
+  guidance (capabilities, Hermes skill, intraday prompt, FAQ).
+
 ## 0.5.0 - 2026-08-01
 
 ### Fixed

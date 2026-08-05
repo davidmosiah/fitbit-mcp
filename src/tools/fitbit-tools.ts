@@ -16,6 +16,8 @@ import {
   EndpointDataOutputSchema,
   ExchangeCodeInputSchema,
   ExchangeCodeOutputSchema,
+  HeartSeriesInputSchema,
+  HeartSeriesOutputSchema,
   IdInputSchema,
   PrivacyAuditOutputSchema,
   ResponseFormatSchema,
@@ -39,6 +41,13 @@ import { applyPrivacy, resolvePrivacyMode } from "../services/privacy.js";
 import { buildDailySummary, buildWeeklySummary, formatSummaryMarkdown } from "../services/summary.js";
 import { buildWellnessContext, formatWellnessContextMarkdown } from "../services/context.js";
 import { FitbitClient, toFitbitCivilDate } from "../services/fitbit-client.js";
+import {
+  SERIES_HARD_MAX_POINTS,
+  buildHeartSeries,
+  parseFitbitClock,
+  pickDayRecordedMaxHr,
+  type FitbitIntradayPayload
+} from "../services/series.js";
 import {
   buildProfileSummary,
   getOnboardingFlow,
@@ -354,7 +363,9 @@ export function registerFitbitTools(server: McpServer): void {
 
   server.registerTool("fitbit_get_heart_intraday", {
     title: "Fitbit Heart Rate Intraday",
-    description: "Get heart-rate intraday samples for a date. Personal apps can access their own intraday data; third-party client/server apps may require Fitbit approval. Requires heartrate scope. Not medical advice.",
+    description:
+      "Get raw heart-rate intraday samples for a date. For agent work prefer fitbit_heart_series (agent-safe-series/v1 with hard point caps and exact stats). " +
+      "Personal apps can access their own intraday data; third-party apps may require Fitbit approval. Requires heartrate scope. Not medical advice.",
     inputSchema: HeartIntradayInputSchema.shape,
     outputSchema: EndpointDataOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
@@ -367,6 +378,72 @@ export function registerFitbitTools(server: McpServer): void {
       const endpoint = `/1/user/-/activities/heart/date/${date}/1d/${params.detail_level}${suffix}.json`;
       const data = applyPrivacy(endpoint, await new FitbitClient(config).get(endpoint), privacyMode);
       return makeResponse({ endpoint, privacy_mode: privacyMode, data }, params.response_format, bulletList("Fitbit Heart Intraday", { endpoint, privacy_mode: privacyMode, data: JSON.stringify(data) }));
+    } catch (error) {
+      return makeError((error as Error).message);
+    }
+  });
+
+  server.registerTool("fitbit_heart_series", {
+    title: "Fitbit Heart Series",
+    description:
+      "Bounded heart-rate time-series for one civil day (agent-safe-series/v1). " +
+      `Exact stats on full-resolution samples plus a downsampled series capped at ${SERIES_HARD_MAX_POINTS} points. ` +
+      "Prefer fitbit_get_heart_day / daily summary first; use this when you need the shape of HR over the day. " +
+      "Shared contract with garmin_activity_series / strava_activity_series / Kindred workout_series. Not medical advice.",
+    inputSchema: HeartSeriesInputSchema.shape,
+    outputSchema: HeartSeriesOutputSchema.shape,
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true }
+  }, async (params) => {
+    try {
+      const date = toFitbitCivilDate(params.date);
+      const hasWindow = Boolean(params.start_time && params.end_time);
+      const suffix = hasWindow ? `/time/${params.start_time}/${params.end_time}` : "";
+      const endpoint = `/1/user/-/activities/heart/date/${date}/1d/${params.detail_level}${suffix}.json`;
+      // Unfiltered: summary privacy would strip the dataset this tool exists to shape.
+      const payload = await new FitbitClient(getConfig()).get(endpoint) as FitbitIntradayPayload;
+
+      let tOriginSeconds = 0;
+      let nominalDurationSeconds = 24 * 60 * 60;
+      let startTime = `${date}T00:00:00`;
+      if (hasWindow && params.start_time && params.end_time) {
+        const startSec = parseFitbitClock(params.start_time);
+        const endSec = parseFitbitClock(params.end_time);
+        if (startSec !== undefined && endSec !== undefined && endSec > startSec) {
+          tOriginSeconds = startSec;
+          nominalDurationSeconds = endSec - startSec;
+          startTime = `${date}T${params.start_time}:00`;
+        }
+      }
+
+      const series = buildHeartSeries(payload, {
+        date,
+        resolutionSeconds: params.resolution_seconds,
+        maxPoints: params.max_points,
+        referenceMaxHr: params.reference_max_hr,
+        activityRecordedMaxHr: pickDayRecordedMaxHr(payload),
+        nominalDurationSeconds,
+        startTime,
+        tOriginSeconds
+      });
+
+      const zones = series.time_in_zone
+        ? series.time_in_zone.zones.map((zone) => `Z${zone.zone} ${zone.percent}%`).join(", ")
+        : undefined;
+      return makeResponse(series, params.response_format, bulletList("Fitbit Heart Series", {
+        date: series.activity_id,
+        metric: `${series.metric} (${series.unit})`,
+        avg: series.stats.avg,
+        min_max: `${series.stats.min}–${series.stats.max}`,
+        percentiles: `p25 ${series.stats.p25} | p50 ${series.stats.p50} | p75 ${series.stats.p75}`,
+        time_in_zone: zones,
+        reference_source: series.time_in_zone?.reference_source,
+        resolution_seconds: series.resolution_seconds,
+        points: `${series.returned_points} returned from ${series.source_points} samples`,
+        downsampled: `${series.downsampled} (${series.method})`,
+        coverage_ratio: series.data_quality.coverage_ratio,
+        coverage_anchor: series.data_quality.coverage_anchor,
+        notes: series.notes.length > 0 ? series.notes.join(" | ") : undefined
+      }));
     } catch (error) {
       return makeError((error as Error).message);
     }
