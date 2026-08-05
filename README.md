@@ -148,7 +148,7 @@ This package uses the official Fitbit Web API. When this README says `raw`, it m
 
 **Heart & physiology** (each takes a `date`)
 
-- `fitbit_get_heart_day`, `fitbit_get_heart_intraday`
+- `fitbit_get_heart_day`, `fitbit_heart_series`, `fitbit_get_heart_intraday`
 - `fitbit_get_hrv_day`, `fitbit_get_spo2_day`, `fitbit_get_breathing_rate_day`
 
 **Body & nutrition** (each takes a `date`)
