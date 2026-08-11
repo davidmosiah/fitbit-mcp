@@ -60,6 +60,11 @@
 
 # Changelog
 
+## 0.6.1
+
+- Security: override `fast-uri@3.1.5` and `ip-address@10.4.0` (high transitive).
+
+
 
 
 
