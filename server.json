@@ -6,12 +6,12 @@
     "url": "https://github.com/davidmosiah/fitbit-mcp",
     "source": "github"
   },
-  "version": "0.6.2",
+  "version": "0.6.3",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "fitbit-mcp-unofficial",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "transport": {
         "type": "stdio"
       },
