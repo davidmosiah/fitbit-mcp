@@ -1,3 +1,9 @@
+## Unreleased
+
+### Security
+
+- Raise stale npm override pins so Dependabot can resolve patched transitives: `qs@6.16.0`, `hono@4.13.7`, `fast-uri@3.1.8`, `ip-address@10.7.1`. Published package version is unchanged.
+
 ## 0.6.3 - 2026-08-29
 
 Skill layer ships in-package (`skill/SKILL.md`). Agents can use MCP tools **or** `call <tool> --json` on the same binary; mutation gates stay identical.
