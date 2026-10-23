@@ -38,7 +38,9 @@ try {
   assert.equal(ready.ok, true);
   assert.equal(ready.ready_for_fitbit_api, true);
   assert.equal(ready.privacy_mode, 'summary');
-  assert.equal(ready.cache.enabled, true);
+  assert.equal(ready.cache.enabled, false);
+  assert.equal(ready.cache.configured, true);
+  assert.match(ready.cache.reason, /disabled/i);
   assert.equal(ready.token.exists, true);
   assert.equal(ready.token.secure_permissions, true);
   assert.equal(ready.token.has_refresh_token, true);
@@ -137,6 +139,35 @@ try {
   assert.equal(doctorAfterSetupPayload.config.source, 'local_config');
   assert.equal(doctorAfterSetupPayload.automatic_auth_supported, true);
   assert.ok(doctorAfterSetupPayload.next_steps.some((step) => step.includes('auth')));
+
+  for (const [cacheFlag, configured] of [['true', true], ['false', false]]) {
+    const jsonDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor', '--json'], {
+      encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir, FITBIT_CACHE: cacheFlag }
+    });
+    assert.equal(jsonDoctor.status, 0, jsonDoctor.stderr);
+    const doctorCache = JSON.parse(jsonDoctor.stdout).cache;
+    assert.deepEqual(doctorCache, {
+      enabled: false,
+      configured,
+      reason: 'Authenticated payload caching and offline fallback are disabled; existing SQLite entries are preserved.'
+    });
+    assert.doesNotMatch(jsonDoctor.stdout, /client-secret-from-setup|\"access\"|\"refresh\"/);
+    assert.ok(!jsonDoctor.stdout.includes(tokenPath));
+    const humanDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor'], {
+      encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir, FITBIT_CACHE: cacheFlag }
+    });
+    assert.equal(humanDoctor.status, 0, humanDoctor.stderr);
+    assert.match(humanDoctor.stdout, /Cache[^\n]*disabled/i);
+    assert.match(humanDoctor.stdout, /existing entries preserved and not inspected/i);
+    if (configured) assert.match(humanDoctor.stdout, /configured setting retained/i);
+    else {
+      assert.match(humanDoctor.stdout, /cache option is off/i);
+      assert.doesNotMatch(humanDoctor.stdout, /retained/i);
+    }
+    assert.doesNotMatch(humanDoctor.stdout, /client-secret-from-setup|\"access\"|\"refresh\"/);
+    assert.ok(!humanDoctor.stdout.includes(tokenPath));
+  }
+
 
   console.log(JSON.stringify({ ok: true, cli_ux: true, doctor: true, status: true, auth_plan: true, setup: true }, null, 2));
 } finally {

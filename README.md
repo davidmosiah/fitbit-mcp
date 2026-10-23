@@ -200,8 +200,11 @@ FITBIT_REDIRECT_URI=http://127.0.0.1:3000/callback
 # Optional
 FITBIT_SCOPES="activity heartrate profile settings sleep weight nutrition"
 FITBIT_PRIVACY_MODE=structured        # summary | structured | raw
-FITBIT_CACHE=sqlite                   # optional read-through cache
+FITBIT_CACHE=sqlite                   # retained setting; authenticated payload cache/fallback disabled
 ```
+
+Authenticated responses bypass both payload caches and offline fallback. Existing SQLite entries are preserved, not inspected or removed by cache status; errors propagate. Anonymous HTTP caching remains available.
+
 
 ## Hermes / remote setup
 

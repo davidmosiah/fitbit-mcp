@@ -80,8 +80,15 @@ export class FitbitClient {
       default_ttl_seconds: 60,
       bypass_env_var: "FITBIT_NO_CACHE"
     };
-    if (!this.config.cacheEnabled) return { ...disabledCacheStatus(this.config.cachePath), http_cache };
-    return { ...this.getCache().status(), http_cache };
+    return {
+      ...disabledCacheStatus(this.config.cachePath),
+      configured: this.config.cacheEnabled,
+      authenticated_requests_bypass: true,
+      reason: "Authenticated payload caching and offline fallback are disabled; existing SQLite entries were not inspected or removed.",
+      existing_entries_preserved: true,
+      entries_inspected: false,
+      http_cache
+    };
   }
 
   async list(path: string, params: ListParams = {}): Promise<{ records: unknown[]; next_page?: number; pages_fetched: number }> {
@@ -153,10 +160,11 @@ export class FitbitClient {
         headers: this.jsonHeaders(refreshed.access_token),
         body: body ? JSON.stringify(cleanParams(body)) : undefined
       });
-      return this.parseAndCache(method, url, retry);
+      return this.parseResponse(retry);
     }
 
-    return this.parseAndCache(method, url, response);
+    // Authenticated payloads must not use a persistent cache keyed only by method and URL.
+    return this.parseResponse(response);
   }
 
   private buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
@@ -245,20 +253,6 @@ export class FitbitClient {
       throw new Error(`Fitbit API HTTP ${response.status}: ${redactErrorMessage(details || response.statusText)}`);
     }
     return payload ?? {};
-  }
-
-  private async parseAndCache(method: "GET" | "POST", url: string, response: Response): Promise<unknown> {
-    try {
-      const payload = await this.parseResponse(response);
-      if (this.config.cacheEnabled && method === "GET") this.getCache().set(method, url, payload);
-      return payload;
-    } catch (error) {
-      if (this.config.cacheEnabled && method === "GET") {
-        const cached = this.getCache().get(method, url);
-        if (cached !== undefined) return cached;
-      }
-      throw error;
-    }
   }
 
   private getCache(): FitbitCache {
