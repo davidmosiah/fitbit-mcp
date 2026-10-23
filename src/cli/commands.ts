@@ -175,7 +175,9 @@ function printDoctor(status: Awaited<ReturnType<typeof buildConnectionStatus>>):
   const scopesOk = status.oauth.scope_status === "ok" || status.oauth.missing_recommended_scopes.length === 0;
   line(scopesOk ? ok : fail, "OAuth scopes");
   line(info, "Privacy mode", status.privacy_mode);
-  line(status.cache.enabled ? ok : info, "Cache", status.cache.enabled ? "enabled" : "disabled; configured setting retained, existing entries preserved and not inspected");
+  line(status.cache.enabled ? ok : info, "Cache", status.cache.enabled ? "enabled" : status.cache.configured
+    ? "disabled; configured setting retained; existing entries preserved and not inspected"
+    : "disabled; cache option is off; existing entries preserved and not inspected");
   if (status.client_checks?.hermes) {
     const hermes = status.client_checks.hermes;
     console.log("");

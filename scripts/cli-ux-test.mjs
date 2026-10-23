@@ -140,13 +140,21 @@ try {
   assert.equal(doctorAfterSetupPayload.automatic_auth_supported, true);
   assert.ok(doctorAfterSetupPayload.next_steps.some((step) => step.includes('auth')));
 
-  const humanDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor'], {
-    encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir }
-  });
-  assert.equal(humanDoctor.status, 0, humanDoctor.stderr);
-  assert.match(humanDoctor.stdout, /Cache[^\n]*disabled[^\n]*retained/i);
-  assert.doesNotMatch(humanDoctor.stdout, /client-secret-from-setup|\"access\"|\"refresh\"/);
-  assert.ok(!humanDoctor.stdout.includes(tokenPath));
+  for (const [cacheFlag, configured] of [['true', true], ['false', false]]) {
+    const humanDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor'], {
+      encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir, FITBIT_CACHE: cacheFlag }
+    });
+    assert.equal(humanDoctor.status, 0, humanDoctor.stderr);
+    assert.match(humanDoctor.stdout, /Cache[^\n]*disabled/i);
+    assert.match(humanDoctor.stdout, /existing entries preserved and not inspected/i);
+    if (configured) assert.match(humanDoctor.stdout, /configured setting retained/i);
+    else {
+      assert.match(humanDoctor.stdout, /cache option is off/i);
+      assert.doesNotMatch(humanDoctor.stdout, /retained/i);
+    }
+    assert.doesNotMatch(humanDoctor.stdout, /client-secret-from-setup|\"access\"|\"refresh\"/);
+    assert.ok(!humanDoctor.stdout.includes(tokenPath));
+  }
 
 
   console.log(JSON.stringify({ ok: true, cli_ux: true, doctor: true, status: true, auth_plan: true, setup: true }, null, 2));
