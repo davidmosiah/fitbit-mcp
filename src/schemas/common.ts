@@ -200,8 +200,13 @@ export const CollectionOutputSchema = z.object({
 
 export const CacheStatusOutputSchema = z.object({
   enabled: z.boolean(),
+  configured: z.boolean().optional(),
+  authenticated_requests_bypass: z.boolean().optional(),
+  reason: z.string().optional(),
+  existing_entries_preserved: z.boolean().optional(),
+  entries_inspected: z.boolean().optional(),
   path: z.string(),
-  entries: z.number().int().nonnegative(),
+  entries: z.number().int().nonnegative().optional(),
   newest_cached_at: z.string().optional(),
   http_cache: z.object({
     size: z.number().int().nonnegative(),
@@ -231,6 +236,8 @@ export const PrivacyAuditOutputSchema = z.object({
   raw_payloads_opt_in: z.boolean(),
   gps_redaction_default: z.boolean(),
   cache_enabled: z.boolean(),
+  cache_configured: z.boolean().optional(),
+  cache_reason: z.string().optional(),
   cache_path: z.string(),
   token_path: z.string(),
   stdout_safe: z.boolean(),
@@ -321,7 +328,7 @@ export const ConnectionStatusOutputSchema = z.object({
     activity_tools_ready: z.boolean(),
     profile_tools_ready: z.boolean()
   }).strict(),
-  cache: z.object({ enabled: z.boolean(), path: z.string() }).strict(),
+  cache: z.object({ enabled: z.boolean(), configured: z.boolean().optional(), reason: z.string().optional(), path: z.string() }).strict(),
   client_checks: z.object({
     hermes: z.object({
       config_path: z.string(),

@@ -471,7 +471,7 @@ export function registerFitbitTools(server: McpServer): void {
 
   server.registerTool("fitbit_cache_status", {
     title: "Fitbit Cache Status",
-    description: "Show optional local SQLite cache status. Enable with FITBIT_CACHE=sqlite or FITBIT_CACHE=true.",
+    description: "Report disabled authenticated payload caching and retained configuration. Existing SQLite entries are preserved and not inspected.",
     inputSchema: ResponseOnlyInputSchema.shape,
     outputSchema: CacheStatusOutputSchema.shape,
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }

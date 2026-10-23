@@ -80,8 +80,15 @@ export class FitbitClient {
       default_ttl_seconds: 60,
       bypass_env_var: "FITBIT_NO_CACHE"
     };
-    if (!this.config.cacheEnabled) return { ...disabledCacheStatus(this.config.cachePath), http_cache };
-    return { ...this.getCache().status(), http_cache };
+    return {
+      ...disabledCacheStatus(this.config.cachePath),
+      configured: this.config.cacheEnabled,
+      authenticated_requests_bypass: true,
+      reason: "Authenticated payload caching and offline fallback are disabled; existing SQLite entries were not inspected or removed.",
+      existing_entries_preserved: true,
+      entries_inspected: false,
+      http_cache
+    };
   }
 
   async list(path: string, params: ListParams = {}): Promise<{ records: unknown[]; next_page?: number; pages_fetched: number }> {

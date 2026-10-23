@@ -5,7 +5,8 @@ import Database from "better-sqlite3";
 export interface CacheStatus extends Record<string, unknown> {
   enabled: boolean;
   path: string;
-  entries: number;
+  /** Omitted when existing stored entries have not been inspected. */
+  entries?: number;
   newest_cached_at?: string;
   http_cache?: {
     size: number;
@@ -70,7 +71,7 @@ export class FitbitCache {
 }
 
 export function disabledCacheStatus(path: string): CacheStatus {
-  return { enabled: false, path, entries: 0 };
+  return { enabled: false, path };
 }
 
 function cacheKey(method: string, url: string): string {
