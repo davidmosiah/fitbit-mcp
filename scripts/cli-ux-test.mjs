@@ -141,6 +141,18 @@ try {
   assert.ok(doctorAfterSetupPayload.next_steps.some((step) => step.includes('auth')));
 
   for (const [cacheFlag, configured] of [['true', true], ['false', false]]) {
+    const jsonDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor', '--json'], {
+      encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir, FITBIT_CACHE: cacheFlag }
+    });
+    assert.equal(jsonDoctor.status, 0, jsonDoctor.stderr);
+    const doctorCache = JSON.parse(jsonDoctor.stdout).cache;
+    assert.deepEqual(doctorCache, {
+      enabled: false,
+      configured,
+      reason: 'Authenticated payload caching and offline fallback are disabled; existing SQLite entries are preserved.'
+    });
+    assert.doesNotMatch(jsonDoctor.stdout, /client-secret-from-setup|\"access\"|\"refresh\"/);
+    assert.ok(!jsonDoctor.stdout.includes(tokenPath));
     const humanDoctor = spawnSync(process.execPath, ['dist/index.js', 'doctor'], {
       encoding: 'utf8', env: { PATH: process.env.PATH, HOME: dir, FITBIT_CACHE: cacheFlag }
     });

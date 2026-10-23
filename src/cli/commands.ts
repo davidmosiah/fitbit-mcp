@@ -139,7 +139,9 @@ function safeDoctorStatus(status: Awaited<ReturnType<typeof buildConnectionStatu
       has_di_token: raw.token.has_di_token
     } : undefined,
     cache: raw.cache ? {
-      enabled: Boolean(raw.cache.enabled)
+      enabled: Boolean(raw.cache.enabled),
+      configured: Boolean(raw.cache.configured),
+      reason: raw.cache.reason
     } : undefined,
     client_checks: safeHermes ? { hermes: safeHermes } : undefined,
     next_steps: raw.next_steps
