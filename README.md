@@ -298,3 +298,7 @@ npx -y fitbit-mcp-unofficial call fitbit_connection_status --json '{}'
 ```
 
 Copy `skill/SKILL.md` into your agent skills dir.
+
+## Release migration
+
+Before upgrading to 0.7.0, review the [compatibility and migration notes](docs/migration-0.7.0.md).
