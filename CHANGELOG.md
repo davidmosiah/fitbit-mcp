@@ -1,5 +1,10 @@
 ## Unreleased
 
+## Unreleased
+
+- Update vulnerable dependencies and explicitly bound tool arguments to 10,000 elements.
+- Reject compressed HTTP request bodies; add synthetic stdio/HTTP input-limit regressions.
+
 ### Security
 
 - Raise stale npm override pins so Dependabot can resolve patched transitives: `qs@6.16.0`, `hono@4.13.7`, `fast-uri@3.1.8`, `ip-address@10.7.1`. Published package version is unchanged.
