@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fitbit-mcp",
+  "version": "0.6.3",
+  "description": "Read the user's Fitbit activity, heart rate, sleep and body data through the local fitbit MCP server.",
+  "author": {
+    "name": "David Mosiah",
+    "url": "https://github.com/davidmosiah"
+  },
+  "homepage": "https://github.com/davidmosiah/fitbit-mcp",
+  "repository": "https://github.com/davidmosiah/fitbit-mcp",
+  "license": "MIT",
+  "keywords": [
+    "ai-agents",
+    "fitbit",
+    "fitness",
+    "health",
+    "heart-rate",
+    "hermes",
+    "mcp",
+    "model-context-protocol",
+    "sleep"
+  ]
+}

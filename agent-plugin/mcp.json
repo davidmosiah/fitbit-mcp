@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "fitbit": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "fitbit-mcp-unofficial@0.6.3"
+      ],
+      "cwd": "${PLUGIN_DATA}"
+    }
+  }
+}
