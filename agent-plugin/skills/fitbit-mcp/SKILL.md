@@ -6,7 +6,7 @@ description: >-
 
 # Fitbit
 
-MCP server `fitbit` from the `fitbit-mcp-unofficial@0.6.3` npm package, run locally through `npx`. It reads daily activity, steps, heart rate, sleep, body measurements and exercise logs. Data source: the official Fitbit Web API.
+MCP server `fitbit` from the `fitbit-mcp-unofficial@0.7.0` npm package, run locally through `npx`. It reads daily activity, steps, heart rate, sleep, body measurements and exercise logs. Data source: the official Fitbit Web API.
 
 ## Workflow
 
@@ -17,9 +17,9 @@ MCP server `fitbit` from the `fitbit-mcp-unofficial@0.6.3` npm package, run loca
 ## Setup (the user runs this in a terminal, not in chat)
 
 ```bash
-npx -y fitbit-mcp-unofficial@0.6.3 setup --client generic
-npx -y fitbit-mcp-unofficial@0.6.3 auth
-npx -y fitbit-mcp-unofficial@0.6.3 doctor
+npx -y fitbit-mcp-unofficial@0.7.0 setup --client generic
+npx -y fitbit-mcp-unofficial@0.7.0 auth
+npx -y fitbit-mcp-unofficial@0.7.0 doctor
 ```
 
 `setup` asks for the Fitbit developer app client ID and secret and saves them locally (`--client generic` because this plugin already registers the server with Hermes); `auth` opens the Fitbit consent page in the browser and stores the OAuth tokens under `~/.fitbit-mcp/` with 0600 permissions; `doctor` confirms readiness.

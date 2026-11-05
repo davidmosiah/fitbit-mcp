@@ -6,7 +6,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "fitbit-mcp-unofficial@0.6.3"
+        "fitbit-mcp-unofficial@0.7.0"
       ],
       "cwd": "${PLUGIN_DATA}"
     }
