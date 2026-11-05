@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fitbit-mcp",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Read the user's Fitbit activity, heart rate, sleep and body data through the local fitbit MCP server.",
   "author": {
     "name": "David Mosiah",
